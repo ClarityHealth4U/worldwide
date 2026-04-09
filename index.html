@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Real Experiences — Medical Community App</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+:root{
+  --teal:#2A9D8F;--teal-d:#1f7a6e;--teal-light:#E0F5F3;--teal-mid:#B2E4DF;
+  --blue:#3B82C4;--blue-light:#EBF4FC;--blue-mid:#BDD9F2;
+  --green:#57A773;--green-light:#E8F5EE;
+  --mint:#F0FAF8;--border:#C8E8E4;
+  --text:#1A3A38;--text2:#4A7A74;--text3:#7AADA8;
+  --red:#e05252;--red-light:#fdeaea;
+  --amber:#d4a017;
+}
+body{background:var(--mint);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:0}
+
+/* ── TOP NAV ── */
+.top-nav{width:100%;background:#fff;border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100;gap:16px}
+.logo{font-size:18px;font-weight:700;color:var(--teal);white-space:nowrap;text-decoration:none}
+.nav-search{flex:1;max-width:500px;position:relative}
+.nav-search input{width:100%;border:1px solid var(--border);background:var(--teal-light);border-radius:20px;padding:8px 16px 8px 36px;font-size:14px;color:var(--text);outline:none}
+.nav-search input::placeholder{color:var(--text3)}
+.nav-search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;stroke:var(--text3);fill:none;stroke-width:2}
+.nav-tabs{display:flex;gap:4px}
+.nav-tab{padding:8px 16px;border:none;background:none;border-radius:20px;font-size:14px;color:var(--text2);cursor:pointer;white-space:nowrap;transition:background .15s,color .15s}
+.nav-tab:hover{background:var(--teal-light)}
+.nav-tab.on{background:var(--teal);color:#fff;font-weight:500}
+
+/* ── BANNER ── */
+.banner{width:100%;background:#FFFBEB;border-bottom:1px solid #E9C46A;padding:12px 48px 12px 24px;font-size:13px;color:#6B4F12;line-height:1.5;position:relative}
+.banner strong{font-size:14px;display:block;margin-bottom:2px;color:#4A3500}
+.banner-close{position:absolute;right:16px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:18px;cursor:pointer;color:#6B4F12;line-height:1;padding:4px}
+
+/* ── MAIN LAYOUT ── */
+.main{width:100%;max-width:1100px;padding:24px 16px;flex:1}
+
+/* ── PAGES ── */
+.page{display:none}
+.page.active{display:block}
+
+/* ── EXPLORE ── */
+.explore-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:16px;cursor:pointer;transition:border-color .15s,box-shadow .15s}
+.card:hover{border-color:var(--teal);box-shadow:0 4px 12px rgba(42,157,143,.1)}
+.card.new-card{border-color:var(--blue)}
+.badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:12px;display:inline-block;margin-bottom:8px}
+.bi{background:#fde8e8;color:#c0392b}
+.bt{background:var(--green-light);color:#2e7d52}
+.card-title{font-size:16px;font-weight:600;color:var(--text);margin-bottom:6px}
+.card-def{font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:10px}
+.card-footer{display:flex;justify-content:space-between;align-items:center}
+.cmt-count{font-size:12px;color:var(--text3)}
+.tap-hint{font-size:12px;color:var(--teal);font-weight:500}
+.no-results{text-align:center;padding:48px;color:var(--text3);font-size:15px}
+
+/* ── DETAIL ── */
+.detail-back{display:flex;align-items:center;gap:8px;margin-bottom:20px}
+.back-btn{background:none;border:1px solid var(--border);border-radius:20px;padding:6px 16px;font-size:13px;color:var(--teal);cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .15s}
+.back-btn:hover{background:var(--teal-light)}
+.back-btn svg{width:14px;height:14px;stroke:var(--teal);fill:none;stroke-width:2.5}
+.detail-wrap{display:grid;grid-template-columns:1fr 380px;gap:24px;align-items:start}
+@media(max-width:800px){.detail-wrap{grid-template-columns:1fr}}
+.detail-card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:24px}
+.detail-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:12px;display:inline-block;margin-bottom:10px}
+.detail-title{font-size:24px;font-weight:700;color:var(--text);margin-bottom:10px}
+.detail-def{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:6px}
+.detail-src{font-size:11px;color:var(--teal);margin-bottom:16px}
+.community-note{background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:10px;padding:12px;font-size:13px;color:var(--blue);margin-bottom:16px;line-height:1.5}
+.divider{border:none;border-top:1px solid var(--border);margin:16px 0}
+.section-label{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px}
+.comment-box{background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px}
+.comment-box.new-comment{border-color:var(--teal);background:var(--teal-light)}
+.cm-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;flex-wrap:wrap;gap:6px}
+.cm-tag{font-size:13px;font-weight:600;color:var(--text)}
+.cm-stars{font-size:13px;color:var(--amber);white-space:nowrap}
+.cm-text{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:8px}
+.cm-footer{display:flex;justify-content:space-between;align-items:center}
+.cm-date{font-size:11px;color:var(--text3)}
+.report-btn{font-size:11px;color:var(--text3);background:none;border:1px solid var(--border);padding:3px 10px;border-radius:8px;cursor:pointer;transition:border-color .15s}
+.report-btn:hover{border-color:var(--red);color:var(--red)}
+.no-comments{font-size:14px;color:var(--text3);text-align:center;padding:24px;font-style:italic}
+
+/* ── SUBMIT PANEL ── */
+.submit-panel{background:#fff;border:1px solid var(--border);border-radius:16px;padding:24px;position:sticky;top:80px}
+.submit-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px}
+.submit-sub{font-size:12px;color:var(--text3);margin-bottom:16px}
+.field-label{font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;margin-top:14px}
+.field-hint{font-size:11px;color:var(--text3);margin-bottom:6px}
+.field-input,.field-textarea{width:100%;border:1px solid var(--border);border-radius:10px;padding:10px 13px;font-size:13px;font-family:inherit;background:var(--teal-light);color:var(--text);outline:none;transition:border-color .15s}
+.field-input:focus,.field-textarea:focus{border-color:var(--teal)}
+.field-textarea{resize:vertical;min-height:100px;line-height:1.5}
+.match-preview{border:1px solid var(--border);border-radius:10px;padding:10px 13px;margin-top:6px;background:#fff;display:none;font-size:12px}
+.match-label{color:var(--text3);margin-bottom:3px}
+.match-val{font-weight:600;color:var(--teal)}
+.match-val.new{color:var(--blue)}
+.star-row{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.star-btn{font-size:26px;background:none;border:none;cursor:pointer;color:#D0E8E6;line-height:1;padding:2px;transition:color .1s,transform .15s}
+.star-btn.lit{color:var(--amber)}
+.star-btn:hover{transform:scale(1.2)}
+.submit-btn{width:100%;margin-top:18px;padding:12px;border:none;background:var(--teal);color:#fff;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;transition:background .15s}
+.submit-btn:hover{background:var(--teal-d)}
+.submit-ok{background:var(--green-light);border:1px solid var(--green);border-radius:10px;padding:12px;font-size:13px;color:#2e7d52;margin-top:14px;display:none;line-height:1.5}
+.submit-ok strong{display:block;margin-bottom:3px}
+
+/* ── SUBMIT PAGE (standalone) ── */
+.submit-page-wrap{max-width:680px;margin:0 auto}
+
+/* ── SOURCES ── */
+.sources-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.source-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;align-items:center;gap:14px;text-decoration:none;transition:border-color .15s,box-shadow .15s}
+.source-card:hover{border-color:var(--teal);box-shadow:0 4px 12px rgba(42,157,143,.08)}
+.source-flag{font-size:26px;width:36px;text-align:center;flex-shrink:0}
+.source-name{font-size:14px;font-weight:600;color:var(--text)}
+.source-country{font-size:12px;color:var(--text3)}
+.source-arrow{color:var(--text3);font-size:18px;margin-left:auto}
+.sources-intro{font-size:15px;color:var(--text2);margin-bottom:20px;line-height:1.6}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(26,58,56,.5);display:none;align-items:center;justify-content:center;z-index:999;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:18px;padding:24px;width:100%;max-width:420px}
+.modal h3{font-size:16px;font-weight:700;color:var(--text);margin-bottom:16px}
+.radio-opt{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer;font-size:14px;color:var(--text)}
+.radio-opt:last-of-type{border-bottom:none}
+.radio-opt input{accent-color:var(--teal);width:16px;height:16px;flex-shrink:0}
+.modal-ta{width:100%;border:1px solid var(--border);border-radius:10px;padding:10px;font-size:13px;font-family:inherit;color:var(--text);background:var(--teal-light);resize:none;margin-top:10px;outline:none}
+.modal-btns{display:flex;gap:10px;margin-top:16px}
+.modal-btns button{flex:1;padding:10px;border-radius:10px;font-size:14px;cursor:pointer;font-weight:500}
+.btn-cancel{border:1px solid var(--border);background:none;color:var(--text2)}
+.btn-submit{border:none;background:var(--teal);color:#fff}
+.modal-thanks{text-align:center;padding:16px 0;font-size:14px;color:var(--text2)}
+
+/* ── UTIL ── */
+.page-header{margin-bottom:20px}
+.page-header h1{font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px}
+.page-header p{font-size:14px;color:var(--text2)}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <a class="logo" href="#">&#9829; Real Experiences</a>
+  <div class="nav-search">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="main-search" placeholder="Search conditions, symptoms or treatments..." oninput="doSearch(this.value)"/>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab on" id="nt-explore" onclick="goTab('explore')">Explore</button>
+    <button class="nav-tab" id="nt-submit" onclick="goTab('submit')">Submit</button>
+    <button class="nav-tab" id="nt-sources" onclick="goTab('sources')">Sources</button>
+  </div>
+</nav>
+
+<!-- BANNER -->
+<div class="banner" id="banner">
+  <button class="banner-close" onclick="document.getElementById('banner').remove()">&#x2715;</button>
+  <strong>Be aware</strong>
+  This is not medical advice from trained professionals — these are real life experiences. Do not use this as your only source of information, and remember everyone can react differently.
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- EXPLORE PAGE -->
+  <div class="page active" id="page-explore">
+    <div class="page-header">
+      <h1>Explore Conditions &amp; Treatments</h1>
+      <p>Browse community experiences. Click any card to read more.</p>
+    </div>
+    <div class="explore-grid" id="card-grid"></div>
+    <div class="no-results" id="no-results" style="display:none">No results found for that search.</div>
+  </div>
+
+  <!-- DETAIL PAGE -->
+  <div class="page" id="page-detail">
+    <div class="detail-back">
+      <button class="back-btn" onclick="goBack()">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Back to Explore
+      </button>
+    </div>
+    <div class="detail-wrap">
+      <div>
+        <div class="detail-card" id="detail-info"></div>
+        <div style="margin-top:20px">
+          <div class="section-label">Community Experiences</div>
+          <div id="detail-comments"></div>
+        </div>
+      </div>
+      <div>
+        <div class="submit-panel">
+          <div class="submit-title">Share your experience</div>
+          <div class="submit-sub">All fields optional &middot; Fully anonymous</div>
+          <div class="field-label">Illness / Symptom</div>
+          <input class="field-input" type="text" id="dp-illness" placeholder="e.g. Migraine, asthma..." oninput="previewMatch('dp','illness',this.value)"/>
+          <div class="match-preview" id="dp-match-illness"><div class="match-label" id="dp-mil"></div><div class="match-val" id="dp-mit"></div></div>
+          <div class="field-label">Medication / Treatment</div>
+          <input class="field-input" type="text" id="dp-treatment" placeholder="e.g. Ibuprofen, CBT..." oninput="previewMatch('dp','treatment',this.value)"/>
+          <div class="match-preview" id="dp-match-treatment"><div class="match-label" id="dp-mtl"></div><div class="match-val" id="dp-mtt"></div></div>
+          <div class="field-label">Your experience</div>
+          <div class="field-hint">As much or as little as you like</div>
+          <textarea class="field-textarea" id="dp-exp" placeholder="Describe your experience..."></textarea>
+          <div class="field-label">Rate this treatment (out of 10)</div>
+          <div class="star-row" id="dp-stars">
+            <button class="star-btn" onclick="setStar('dp',1)">&#9733;</button>
+            <button class="star-btn" onclick="setStar('dp',2)">&#9733;</button>
+            <button class="star-btn" onclick="setStar('dp',3)">&#9733;</button>
+            <button class="star-btn" onclick="setStar('dp',4)">&#9733;</button>
+            <button class="star-btn" onclick="setStar('dp',5)">&#9733;</button>
+            <button class="star-btn" onclick="setStar('dp',6)">&#9733;</button>
+            <button class="star-btn" onclick="setStar('dp',7)">&#9733;</button>
+            <button class="star-btn" onclick="setStar('dp',8)">&#9733;</button>
+            <button class="star-btn" onclick="setStar('dp',9)">&#9733;</button>
+            <button class="star-btn" onclick="setStar('dp',10)">&#9733;</button>
+          </div>
+          <button class="submit-btn" onclick="doSubmit('dp')">Submit Experience</button>
+          <div class="submit-ok" id="dp-ok"><strong>Submitted!</strong><span id="dp-ok-msg"></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUBMIT PAGE -->
+  <div class="page" id="page-submit">
+    <div class="submit-page-wrap">
+      <div class="page-header">
+        <h1>Share Your Experience</h1>
+        <p>Your submission is completely anonymous. Help others by sharing what worked — or didn't — for you.</p>
+      </div>
+      <div class="submit-panel" style="position:static">
+        <div class="field-label">What is your illness / symptom?</div>
+        <input class="field-input" type="text" id="sp-illness" placeholder="e.g. Migraine, asthma, back pain..." oninput="previewMatch('sp','illness',this.value)"/>
+        <div class="match-preview" id="sp-match-illness"><div class="match-label" id="sp-mil"></div><div class="match-val" id="sp-mit"></div></div>
+        <div class="field-label">What medication or treatment did you use?</div>
+        <input class="field-input" type="text" id="sp-treatment" placeholder="e.g. Ibuprofen, CBT, physiotherapy..." oninput="previewMatch('sp','treatment',this.value)"/>
+        <div class="match-preview" id="sp-match-treatment"><div class="match-label" id="sp-mtl"></div><div class="match-val" id="sp-mtt"></div></div>
+        <div class="field-label">Describe your experience</div>
+        <div class="field-hint">As much or as little as you like</div>
+        <textarea class="field-textarea" id="sp-exp" placeholder="What happened? Did it help? Any side effects?" style="min-height:140px"></textarea>
+        <div class="field-label">How would you rate this treatment? (out of 10)</div>
+        <div class="field-hint">Tap a star to rate</div>
+        <div class="star-row" id="sp-stars">
+          <button class="star-btn" onclick="setStar('sp',1)">&#9733;</button>
+          <button class="star-btn" onclick="setStar('sp',2)">&#9733;</button>
+          <button class="star-btn" onclick="setStar('sp',3)">&#9733;</button>
+          <button class="star-btn" onclick="setStar('sp',4)">&#9733;</button>
+          <button class="star-btn" onclick="setStar('sp',5)">&#9733;</button>
+          <button class="star-btn" onclick="setStar('sp',6)">&#9733;</button>
+          <button class="star-btn" onclick="setStar('sp',7)">&#9733;</button>
+          <button class="star-btn" onclick="setStar('sp',8)">&#9733;</button>
+          <button class="star-btn" onclick="setStar('sp',9)">&#9733;</button>
+          <button class="star-btn" onclick="setStar('sp',10)">&#9733;</button>
+        </div>
+        <button class="submit-btn" onclick="doSubmit('sp')">Submit Experience</button>
+        <div class="submit-ok" id="sp-ok"><strong>Submitted!</strong><span id="sp-ok-msg"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOURCES PAGE -->
+  <div class="page" id="page-sources">
+    <div class="page-header">
+      <h1>Medical Informative Sources</h1>
+    </div>
+    <p class="sources-intro">These are official, reliable health organisations from around the world. Always consult a healthcare professional for personal medical advice.</p>
+    <div class="sources-grid">
+      <a class="source-card" href="https://www.nhs.uk" target="_blank"><span class="source-flag">&#127468;&#127463;</span><div><div class="source-name">NHS</div><div class="source-country">United Kingdom</div></div><span class="source-arrow">&#8250;</span></a>
+      <a class="source-card" href="https://www.cdc.gov" target="_blank"><span class="source-flag">&#127482;&#127480;</span><div><div class="source-name">CDC</div><div class="source-country">United States</div></div><span class="source-arrow">&#8250;</span></a>
+      <a class="source-card" href="https://www.mayoclinic.org" target="_blank"><span class="source-flag">&#127482;&#127480;</span><div><div class="source-name">Mayo Clinic</div><div class="source-country">United States</div></div><span class="source-arrow">&#8250;</span></a>
+      <a class="source-card" href="https://www.who.int" target="_blank"><span class="source-flag">&#127758;</span><div><div class="source-name">WHO</div><div class="source-country">International</div></div><span class="source-arrow">&#8250;</span></a>
+      <a class="source-card" href="https://www.healthdirect.gov.au" target="_blank"><span class="source-flag">&#127462;&#127482;</span><div><div class="source-name">Healthdirect</div><div class="source-country">Australia</div></div><span class="source-arrow">&#8250;</span></a>
+      <a class="source-card" href="https://www.canada.ca/en/health-canada.html" target="_blank"><span class="source-flag">&#127464;&#127462;</span><div><div class="source-name">Health Canada</div><div class="source-country">Canada</div></div><span class="source-arrow">&#8250;</span></a>
+      <a class="source-card" href="https://www.rki.de/EN" target="_blank"><span class="source-flag">&#127465;&#127466;</span><div><div class="source-name">Robert Koch Institute</div><div class="source-country">Germany</div></div><span class="source-arrow">&#8250;</span></a>
+      <a class="source-card" href="https://www.santepubliquefrance.fr" target="_blank"><span class="source-flag">&#127467;&#127479;</span><div><div class="source-name">Santé Publique France</div><div class="source-country">France</div></div><span class="source-arrow">&#8250;</span></a>
+      <a class="source-card" href="https://www.mohfw.gov.in" target="_blank"><span class="source-flag">&#127470;&#127475;</span><div><div class="source-name">Ministry of Health</div><div class="source-country">India</div></div><span class="source-arrow">&#8250;</span></a>
+      <a class="source-card" href="https://www.mhlw.go.jp/english" target="_blank"><span class="source-flag">&#127471;&#127477;</span><div><div class="source-name">Ministry of Health, Labour &amp; Welfare</div><div class="source-country">Japan</div></div><span class="source-arrow">&#8250;</span></a>
+      <a class="source-card" href="https://www.health.gov.za" target="_blank"><span class="source-flag">&#127487;&#127462;</span><div><div class="source-name">National Dept. of Health</div><div class="source-country">South Africa</div></div><span class="source-arrow">&#8250;</span></a>
+      <a class="source-card" href="https://www.niph.no/en" target="_blank"><span class="source-flag">&#127475;&#127476;</span><div><div class="source-name">Norwegian Institute of Public Health</div><div class="source-country">Norway</div></div><span class="source-arrow">&#8250;</span></a>
+      <a class="source-card" href="https://www.minsalud.gov.co" target="_blank"><span class="source-flag">&#127464;&#127476;</span><div><div class="source-name">Ministerio de Salud</div><div class="source-country">Colombia</div></div><span class="source-arrow">&#8250;</span></a>
+    </div>
+  </div>
+
+</div>
+
+<!-- REPORT MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal" id="modal-inner"></div>
+</div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────────────
+var starRatings = {dp:0, sp:0};
+var currentDetailId = null;
+var prevPage = 'explore';
+
+function d(daysAgo){
+  var dt = new Date();
+  dt.setDate(dt.getDate() - daysAgo);
+  return dt.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+}
+
+var data = {
+// ── RESPIRATORY ──
+common_cold:{type:'illness',title:'Common Cold',def:'The common cold is a viral infection of the upper respiratory tract, mainly affecting the nose and throat. Symptoms include a runny or blocked nose, sore throat, sneezing, and a mild cough. Most colds clear up within 7–10 days.',src:'Source: NHS.uk',kw:'common cold runny nose sore throat sneezing viral',comments:[
+  {tag:'Paracetamol + rest',stars:7,text:'Took paracetamol every six hours, drank plenty of fluids, and stayed in bed for two days. Felt noticeably better by day four. Nothing cures a cold but managing the symptoms early makes a real difference.',date:d(14)},
+  {tag:'Vitamin C and zinc',stars:5,text:'Started taking vitamin C and zinc supplements at the first sign of a cold. Hard to say if it shortened the duration but I felt slightly less awful than usual. Might be placebo but I\'ll keep doing it.',date:d(30)}
+]},
+influenza:{type:'illness',title:'Influenza (Flu)',def:'Influenza is a highly contagious viral infection that affects the respiratory system. Symptoms include fever, chills, muscle aches, headache, fatigue, cough and sore throat, and can be more severe than a common cold.',src:'Source: NHS.uk',kw:'influenza flu fever aches fatigue viral infection',comments:[
+  {tag:'Oseltamivir (Tamiflu)',stars:7,text:'Got Tamiflu within 48 hours of flu symptoms starting and while it didn\'t eliminate the illness, it seemed to reduce the severity and I was back on my feet about two days earlier than previous flu episodes.',date:d(20)},
+  {tag:'Paracetamol and fluids',stars:6,text:'No antiviral available so I managed symptoms with paracetamol for the fever and drank constantly. Still felt dreadful for five days but the temperature stayed under control which made it more bearable.',date:d(45)}
+]},
+covid19:{type:'illness',title:'COVID-19',def:'COVID-19 is an infectious disease caused by the SARS-CoV-2 virus. Symptoms vary widely and can include fever, continuous cough, fatigue, loss of taste or smell, breathlessness and body aches. Most people recover at home, though some require hospital care.',src:'Source: NHS.uk',kw:'covid coronavirus SARS fever cough taste smell',comments:[
+  {tag:'Rest, fluids, paracetamol',stars:6,text:'Had COVID for ten days. Paracetamol kept the fever down and constant hydration helped. The fatigue was the hardest part — I could barely get out of bed. Full recovery took about three weeks for me.',date:d(60)},
+  {tag:'COVID vaccination',stars:9,text:'Vaccinated and then caught COVID. Symptoms were mild — a sore throat, fatigue and a mild cough for five days. Without the vaccine I genuinely believe it would have been far worse based on what friends experienced unvaccinated.',date:d(90)}
+]},
+tonsillitis:{type:'illness',title:'Tonsillitis',def:'Tonsillitis is inflammation of the tonsils usually caused by a viral or bacterial infection. Symptoms include a sore throat, difficulty swallowing, high temperature, and swollen neck glands. Most cases get better within a week without treatment.',src:'Source: NHS.uk',kw:'tonsillitis tonsils sore throat swallowing infection',comments:[
+  {tag:'Penicillin antibiotics',stars:8,text:'Doctor prescribed penicillin for a confirmed bacterial case. Within 48 hours the pain had reduced significantly and I could swallow again without wincing. Completed the full course and it cleared completely.',date:d(25)},
+  {tag:'Ibuprofen and throat spray',stars:6,text:'For a viral case, antibiotics weren\'t prescribed. Alternating paracetamol and ibuprofen with a throat numbing spray got me through the worst five days. Cold drinks and ice lollies also genuinely helped.',date:d(50)}
+]},
+sore_throat:{type:'illness',title:'Sore Throat (Pharyngitis)',def:'A sore throat is pain, scratchiness or irritation of the throat that often worsens when you swallow. Most sore throats are caused by viral infections and get better on their own within a week.',src:'Source: NHS.uk',kw:'sore throat pharyngitis pain swallowing viral',comments:[
+  {tag:'Throat lozenges and warm honey',stars:7,text:'Sucking on medicated lozenges every few hours and sipping warm water with honey and lemon throughout the day kept the pain manageable. Cleared up on its own within five days.',date:d(12)},
+  {tag:'Ibuprofen',stars:8,text:'Ibuprofen worked better than paracetamol for my throat pain as it tackles the inflammation. Taken regularly for three days made the soreness much more bearable while it resolved naturally.',date:d(35)}
+]},
+sinusitis:{type:'illness',title:'Sinusitis',def:'Sinusitis is swelling of the sinuses, usually caused by a viral infection. Symptoms include a blocked or runny nose, pain and tenderness around the cheeks, forehead or eyes, and a sinus headache. Most cases resolve within two to three weeks.',src:'Source: NHS.uk',kw:'sinusitis sinus congestion headache blocked nose facial pain',comments:[
+  {tag:'Saline nasal rinse',stars:8,text:'Using a saline nasal rinse twice a day cleared the congestion far more effectively than any decongestant I\'d tried. It feels unpleasant at first but the relief afterwards is immediate and lasts for hours.',date:d(18)},
+  {tag:'Steroid nasal spray',stars:7,text:'After recurring sinusitis my GP prescribed a steroid nasal spray for regular use. Took a couple of weeks to build up but reduced the frequency of episodes considerably.',date:d(40)}
+]},
+bronchitis:{type:'illness',title:'Bronchitis',def:'Bronchitis is an infection of the main airways of the lungs, causing them to become irritated and inflamed. The main symptom is a hacking cough which may bring up mucus. Most cases are viral and clear within three weeks.',src:'Source: NHS.uk',kw:'bronchitis cough airways mucus chest viral infection',comments:[
+  {tag:'Rest and hydration',stars:6,text:'Acute bronchitis lasted about two weeks. No antibiotic prescribed as it was viral. Drinking a lot of fluids and resting kept me from getting worse. The cough lingered for another week or so after I felt better.',date:d(22)},
+  {tag:'Steam inhalation',stars:5,text:'Leaning over a bowl of hot water with a towel over my head for ten minutes twice a day helped loosen the mucus and made breathing feel easier temporarily. It\'s not a cure but it brought relief.',date:d(55)}
+]},
+pneumonia:{type:'illness',title:'Pneumonia',def:'Pneumonia is swelling of the tissue in one or both lungs, usually caused by a bacterial infection. Symptoms include a cough that may produce phlegm, difficulty breathing, rapid heartbeat, fever and feeling generally unwell.',src:'Source: NHS.uk',kw:'pneumonia lung infection bacterial cough breathing fever',comments:[
+  {tag:'Amoxicillin antibiotics',stars:8,text:'Diagnosed with community-acquired pneumonia and prescribed amoxicillin. Started feeling improvement after three days and by day seven was functioning again. Had to complete a full ten-day course. Essential to finish it all.',date:d(28)},
+  {tag:'Hospital IV antibiotics',stars:9,text:'Hospitalised with severe pneumonia and given intravenous antibiotics. The improvement was noticeable within 24 hours. Three days in hospital then oral antibiotics at home. The NHS care was excellent throughout.',date:d(120)}
+]},
+ear_infection:{type:'illness',title:'Ear Infection (Otitis Media)',def:'An ear infection is an infection of the middle ear. It is most common in children but can affect adults. Symptoms include earache, difficulty hearing, a high temperature and discharge from the ear. Many cases resolve without antibiotics.',src:'Source: NHS.uk',kw:'ear infection otitis media earache hearing pain discharge',comments:[
+  {tag:'Amoxicillin',stars:7,text:'After four days of worsening ear pain my GP prescribed antibiotics. The pain started easing within 48 hours. Would have been tempting to stop early but I made sure to complete the full course.',date:d(16)},
+  {tag:'Warm compress and ibuprofen',stars:6,text:'Held a warm flannel against my ear and took ibuprofen for the pain. The GP said it should clear on its own and it did, but those first three days were really painful. The warmth helped considerably.',date:d(42)}
+]},
+// ── MENTAL HEALTH & NEURO ──
+anxiety:{type:'illness',title:'Anxiety',def:'Anxiety is a feeling of unease such as worry or fear, which can be mild or severe. Most people experience anxiety at some points in their lives, but for some it can be persistent and significantly affect daily life.',src:'Source: NHS.uk',kw:'anxiety worry fear stress panic mental health',comments:[
+  {tag:'CBT',stars:10,text:'CBT genuinely transformed how I manage anxiety. After three months of weekly sessions I had a completely different relationship with anxious thoughts. The techniques are still things I use every single day.',date:d(90)},
+  {tag:'Sertraline',stars:7,text:'Took around six weeks to feel a proper effect. The first two weeks were rough with increased anxiety. Once it settled though, my baseline anxiety dropped noticeably. Bad days are much less frequent now.',date:d(180)},
+  {tag:'Daily exercise',stars:8,text:'Started running three times a week and the change in my anxiety levels was noticeable within a couple of weeks. Not a replacement for therapy but it\'s made a real ongoing difference.',date:d(60)}
+]},
+depression:{type:'illness',title:'Depression',def:'Depression is a low mood that lasts for weeks or months and affects daily life. It can cause a persistent feeling of sadness, hopelessness, and loss of interest in things you used to enjoy.',src:'Source: NHS.uk',kw:'depression low mood sadness hopeless mental health',comments:[
+  {tag:'Amitriptyline',stars:8,text:'Was prescribed this for migraines but noticed within a few weeks that my mood had lifted considerably. Sleep improved first, then gradually felt more able to enjoy everyday things. Side effects settled after month one.',date:d(200)},
+  {tag:'Fluoxetine',stars:6,text:'Takes patience — didn\'t feel anything different for nearly two months, then gradually felt less heavy. Still have difficult days but they\'re not as all-consuming. Nausea in the first few weeks was rough.',date:d(150)}
+]},
+stress_disorders:{type:'illness',title:'Stress-Related Disorders',def:'Stress-related disorders encompass a range of conditions including acute stress disorder, adjustment disorder and burnout. They are triggered by stressful life events and can cause significant distress and impairment in daily functioning.',src:'Source: NHS.uk',kw:'stress burnout adjustment disorder work pressure mental health',comments:[
+  {tag:'Therapy and time off work',stars:8,text:'Took a period of sick leave alongside weekly counselling sessions. The combination of removing the stressor and processing the reasons for burnout made a real difference. Coming back to work gradually also helped.',date:d(70)},
+  {tag:'Mindfulness meditation',stars:7,text:'Started using a guided mindfulness app for fifteen minutes each morning. After about a month the overall sense of being overwhelmed reduced noticeably. It doesn\'t fix the source of stress but changes how you respond to it.',date:d(45)}
+]},
+insomnia:{type:'illness',title:'Insomnia',def:'Insomnia is difficulty getting to sleep or staying asleep for long enough to feel refreshed the next morning. It is a common condition thought to affect around one in every three people in the UK at some point.',src:'Source: NHS.uk',kw:'insomnia sleep difficulty tired restless night',comments:[
+  {tag:'CBT for insomnia (CBT-I)',stars:9,text:'CBT-I through a digital programme completely changed my sleep. The sleep restriction element was hard for the first two weeks but after a month I was sleeping consistently for the first time in years. Highly recommend.',date:d(80)},
+  {tag:'Sleep hygiene changes',stars:6,text:'Stopped using my phone an hour before bed, kept the bedroom cool and dark, and set a consistent wake time even on weekends. Took several weeks but sleep improved meaningfully. Basic but effective.',date:d(30)}
+]},
+migraine:{type:'illness',title:'Migraine',def:'Migraines are a recurring type of headache causing moderate to severe throbbing pain, usually on one side of the head. They can be accompanied by nausea, vomiting and sensitivity to light or sound. Attacks can last hours to several days.',src:'Source: NHS.uk',kw:'migraine headache throbbing nausea aura light sensitive',comments:[
+  {tag:'Sumatriptan',stars:8,text:'Took it within half an hour of onset and the migraine cleared within about an hour. Works best when caught early. Far less effective once fully set in. Mild drowsiness afterwards but completely worth it.',date:d(21)},
+  {tag:'Propranolol (preventative)',stars:8,text:'Low daily dose for prevention. Went from several migraines a month to almost none. Took a few weeks to build up but made a huge difference to my daily life and ability to work.',date:d(110)},
+  {tag:'Dark room and cold compress',stars:5,text:'No medication available so lying in a dark, silent room with a cold compress helped take the worst edge off. Not a cure but makes it bearable. Keeping hydrated throughout also seems to help.',date:d(7)}
+]},
+tension_headaches:{type:'illness',title:'Tension Headaches',def:'Tension headaches are the most common type of headache. They cause a dull, constant ache or pressure on both sides of the head, often described as a tight band around the head. They can last from 30 minutes to several hours.',src:'Source: NHS.uk',kw:'tension headache pressure tight band dull ache stress',comments:[
+  {tag:'Paracetamol',stars:7,text:'Two paracetamol at the first sign of a tension headache reliably takes the edge off within 30 minutes. If I leave it too long before taking anything it doesn\'t work as well, so I\'ve learned to act early.',date:d(9)},
+  {tag:'Stretching and posture',stars:7,text:'My tension headaches were linked to desk posture. Regular neck stretches and adjusting my monitor height reduced the frequency dramatically. I now rarely get them — and when I do they\'re milder.',date:d(55)}
+]},
+vertigo:{type:'illness',title:'Dizziness / Vertigo',def:'Vertigo is a sensation of feeling off balance or that the world is spinning around you. It is often caused by a problem in the inner ear and can lead to nausea, vomiting, and difficulty standing or walking.',src:'Source: NHS.uk',kw:'vertigo dizziness spinning balance inner ear nausea',comments:[
+  {tag:'Epley manoeuvre',stars:9,text:'A GP showed me the Epley manoeuvre for BPPV and it worked almost immediately. The sensation of spinning during the procedure was intense but within a few minutes it resolved symptoms that had been debilitating for days.',date:d(33)},
+  {tag:'Prochlorperazine',stars:6,text:'Prescribed for acute vertigo to manage the nausea. It didn\'t stop the dizziness but meant I could stay functional rather than being completely bedridden. The vertigo itself resolved over about a week.',date:d(75)}
+]},
+chronic_fatigue:{type:'illness',title:'Chronic Fatigue Syndrome (ME/CFS)',def:'Myalgic encephalomyelitis or chronic fatigue syndrome (ME/CFS) is a complex, long-term illness that causes extreme fatigue and many other symptoms. It is not relieved by rest and is worsened by physical or mental activity.',src:'Source: NHS.uk',kw:'chronic fatigue ME CFS exhaustion post-viral',comments:[
+  {tag:'Pacing and activity management',stars:7,text:'Learning to pace my activity rather than pushing through was the single most important thing. It goes against every instinct but stopping before you feel tired rather than after prevents the crashes that set you back weeks.',date:d(100)},
+  {tag:'Low-dose amitriptyline for sleep',stars:6,text:'Prescribed a very low dose to help with the unrefreshing sleep that makes CFS so much worse. Sleep quality improved which helped with overall functioning, though it didn\'t address the fatigue itself directly.',date:d(140)}
+]},
+// ── MUSCULOSKELETAL ──
+lower_back_pain:{type:'illness',title:'Lower Back Pain',def:'Lower back pain is very common and usually gets better within a few weeks or months. It can be caused by muscle strain, poor posture, or a slipped disc. Staying active is usually the best approach rather than resting in bed.',src:'Source: NHS.uk',kw:'lower back pain spine lumbar muscle strain posture',comments:[
+  {tag:'Ibuprofen',stars:7,text:'Took the edge off lower back pain reasonably well, especially when taken regularly with food for a few days. Didn\'t eliminate it completely but made it manageable enough to keep moving, which helped recovery.',date:d(15)},
+  {tag:'Physiotherapy',stars:9,text:'Six sessions of physio did more for my recurring back pain than years of painkillers. The exercises felt unusual at first but the improvement was significant and long-lasting. An absolute game changer.',date:d(90)}
+]},
+neck_pain:{type:'illness',title:'Neck Pain',def:'Neck pain is common and usually caused by muscle tension or a minor injury. It can often be managed at home with painkillers, gentle movement and hot or cold packs. Most cases resolve within a few weeks.',src:'Source: NHS.uk',kw:'neck pain stiffness posture desk muscle tension',comments:[
+  {tag:'Heat and gentle stretching',stars:7,text:'Applying a heat pack for 20 minutes and doing gentle rotational stretches three times a day resolved my neck pain within about ten days. Adjusting my laptop position to eye level stopped it coming back.',date:d(20)},
+  {tag:'Diclofenac gel',stars:7,text:'Applied the gel directly to the painful area twice a day. Worked better than oral painkillers for me because it targeted the area directly with less systemic side effects. Noticed improvement within two or three days.',date:d(40)}
+]},
+osteoarthritis:{type:'illness',title:'Osteoarthritis',def:'Osteoarthritis is a condition that causes joints to become painful and stiff. It is the most common type of arthritis in the UK. The cartilage covering the ends of bones gradually becomes rougher and thinner, causing pain and swelling.',src:'Source: NHS.uk',kw:'osteoarthritis joint pain cartilage stiffness wear tear',comments:[
+  {tag:'Ibuprofen 800mg',stars:8,text:'Higher-dose ibuprofen taken with food has been the most effective thing for my osteoarthritis pain. I\'ve been on it for years — it doesn\'t fix the underlying issue but the quality of life improvement is significant.',date:d(200)},
+  {tag:'Swimming',stars:8,text:'Rheumatologist suggested swimming as low-impact exercise. It\'s been one of the best things I\'ve done — keeps the joints mobile without impact that worsens pain. Three times a week makes a noticeable difference.',date:d(130)}
+]},
+rheumatoid_arthritis:{type:'illness',title:'Rheumatoid Arthritis',def:'Rheumatoid arthritis is a long-term condition that causes pain, swelling and stiffness in the joints. The symptoms usually affect the hands, feet and wrists. There may be periods of more severe symptoms and periods where they improve.',src:'Source: NHS.uk',kw:'rheumatoid arthritis autoimmune joint inflammation swelling hands',comments:[
+  {tag:'Methotrexate',stars:7,text:'Took about three months to feel the full effect but joint swelling and morning stiffness reduced considerably. Had to have regular blood tests but my rheumatologist managed it well. Has made daily life much more manageable.',date:d(180)},
+  {tag:'Hydroxychloroquine',stars:6,text:'A gentler option used alongside methotrexate. On its own it wasn\'t enough but as part of a combination approach it contributed to better control of the disease. Fewer side effects than the other medications I\'ve tried.',date:d(220)}
+]},
+tendinitis:{type:'illness',title:'Tendinitis',def:'Tendinitis is inflammation or irritation of a tendon, usually caused by repetitive movements or overuse. It commonly affects the shoulder, elbow, wrist, knee and heel, causing pain and tenderness around the affected joint.',src:'Source: NHS.uk',kw:'tendinitis tendon inflammation overuse repetitive strain elbow shoulder',comments:[
+  {tag:'RICE method and ibuprofen',stars:7,text:'Rested the tendon, applied ice for the first 48 hours, used compression and kept it elevated. Combined with regular ibuprofen for the inflammation it settled within three weeks. Crucial not to go back to activity too soon.',date:d(35)},
+  {tag:'Physiotherapy exercises',stars:8,text:'Eccentric strengthening exercises prescribed by a physio were uncomfortable at first but made a real lasting difference to my Achilles tendinitis. Took about eight weeks of consistent effort but I haven\'t had a recurrence.',date:d(100)}
+]},
+muscle_strain:{type:'illness',title:'Muscle Strain',def:'A muscle strain is when muscle fibres are stretched or torn. It is usually caused by sudden movement, overuse or poor form during exercise. Symptoms include localised pain, swelling, bruising and limited movement.',src:'Source: NHS.uk',kw:'muscle strain pull tear injury exercise sport',comments:[
+  {tag:'Rest, ice, ibuprofen',stars:7,text:'Strained my calf during a run. Two days of rest with ice packs and regular ibuprofen got the swelling down significantly. Eased back into walking after three days and running again after two weeks without any issues.',date:d(22)},
+  {tag:'Heat therapy (after 48hrs)',stars:7,text:'Switched to a heat pad after the initial inflammation had settled (around 48 hours) and it really helped loosen the muscle and reduce the residual soreness. Heat is better for the recovery phase than the acute phase.',date:d(15)}
+]},
+sciatica:{type:'illness',title:'Sciatica',def:'Sciatica is where the sciatic nerve is irritated or compressed, causing pain that radiates from the lower back through the buttock and down the leg. It can also cause numbness, tingling and weakness in the affected leg.',src:'Source: NHS.uk',kw:'sciatica sciatic nerve back leg pain radiating numbness',comments:[
+  {tag:'Ibuprofen 800mg',stars:6,text:'800mg provided meaningful relief from sciatica pain for a few hours at a time. Not a cure but enough to keep functioning. Important to take with food as my stomach was sensitive. Long-term use caused some heartburn.',date:d(40)},
+  {tag:'Physiotherapy and McKenzie exercises',stars:8,text:'A physio diagnosed my specific type of sciatica and prescribed McKenzie extension exercises. Within three weeks of doing them consistently the leg pain had reduced significantly. Far more effective than any medication.',date:d(75)}
+]},
+// ── DIGESTIVE ──
+acid_reflux:{type:'illness',title:'Acid Reflux (GERD)',def:'Acid reflux is when stomach acid flows back up into the food pipe (oesophagus). It commonly causes heartburn — a burning sensation in the chest — as well as an unpleasant taste in the mouth and difficulty swallowing.',src:'Source: NHS.uk',kw:'acid reflux GERD heartburn oesophagus stomach burning',comments:[
+  {tag:'Omeprazole',stars:8,text:'Started omeprazole and the difference was noticeable within two days. After a week of consistent use the heartburn was almost completely gone. Had suffered for months before trying this and wished I\'d done it sooner.',date:d(25)},
+  {tag:'Dietary and lifestyle changes',stars:7,text:'Cut out coffee, alcohol and spicy food and stopped eating within three hours of bed. The reflux reduced dramatically. It takes real discipline but the changes made a bigger difference than I expected.',date:d(60)}
+]},
+gastritis:{type:'illness',title:'Gastritis',def:'Gastritis is inflammation of the stomach lining. It can be caused by infection, certain medications such as NSAIDs, or excessive alcohol. Symptoms include indigestion, nausea, vomiting and upper abdominal pain.',src:'Source: NHS.uk',kw:'gastritis stomach inflammation indigestion nausea abdominal pain',comments:[
+  {tag:'Antacids and omeprazole',stars:7,text:'Antacids provided short-term relief and omeprazole settled things over a couple of weeks. Also stopped ibuprofen which was likely a contributing factor. Avoided acidic and spicy food during recovery.',date:d(30)},
+  {tag:'H. pylori antibiotic treatment',stars:8,text:'Tested positive for H. pylori and completed a triple therapy course — two antibiotics and a proton pump inhibitor for seven days. Not pleasant but the gastritis resolved completely after treatment.',date:d(80)}
+]},
+ibs:{type:'illness',title:'Irritable Bowel Syndrome (IBS)',def:'IBS is a common condition that affects the digestive system. It causes symptoms like stomach cramps, bloating, diarrhoea and constipation. These tend to come and go over time and can last days or weeks.',src:'Source: NHS.uk',kw:'IBS irritable bowel syndrome cramps bloating diarrhoea constipation',comments:[
+  {tag:'Low FODMAP diet',stars:9,text:'Following a low FODMAP diet under a dietitian\'s guidance was transformative. It takes weeks to identify triggers properly but once I knew what to avoid, the bloating and cramps reduced dramatically.',date:d(120)},
+  {tag:'Buscopan',stars:6,text:'Helpful for acute cramping — takes effect within about 15 minutes and provides a few hours of relief. Not a long-term solution but very useful when symptoms flare unexpectedly.',date:d(45)}
+]},
+constipation:{type:'illness',title:'Constipation',def:'Constipation is when you have difficulty going to the toilet or you go less often than usual. It is a very common condition and usually clears up on its own, though lifestyle changes and laxatives can help.',src:'Source: NHS.uk',kw:'constipation bowels toilet difficulty straining infrequent',comments:[
+  {tag:'Lactulose',stars:6,text:'Prescribed lactulose and it worked within about 48 hours. Tastes fine and was gentle. Important to drink plenty of water alongside it otherwise it doesn\'t work as well.',date:d(18)},
+  {tag:'Increased fibre and water',stars:7,text:'Increased my fibre intake with oats, lentils and vegetables and started drinking two litres of water a day. Took about a week but my digestive pattern normalised and stayed that way. Simple and effective.',date:d(40)}
+]},
+diarrhoea:{type:'illness',title:'Diarrhoea',def:'Diarrhoea is passing looser, watery stools more than three times a day. It is usually caused by a stomach bug and normally clears up within a few days. Staying well hydrated is the most important thing.',src:'Source: NHS.uk',kw:'diarrhoea loose stools stomach bug gastroenteritis',comments:[
+  {tag:'Oral rehydration salts',stars:8,text:'Rehydration sachets were the most useful thing during a bad bout of diarrhoea. Plain water wasn\'t replacing the electrolytes properly and I was feeling faint. The sachets sorted this within a few hours.',date:d(10)},
+  {tag:'Loperamide (Imodium)',stars:7,text:'Useful for when I needed to travel and couldn\'t wait for it to resolve naturally. Slowed things down effectively. I wouldn\'t use it as a first resort but when necessary it works quickly.',date:d(25)}
+]},
+food_poisoning:{type:'illness',title:'Food Poisoning',def:'Food poisoning is an illness caused by eating contaminated food. Symptoms include nausea, vomiting, diarrhoea and stomach cramps and usually develop within a few hours to a few days of eating affected food.',src:'Source: NHS.uk',kw:'food poisoning contaminated nausea vomiting diarrhoea cramps',comments:[
+  {tag:'Oral rehydration and rest',stars:7,text:'The most severe 12 hours of the illness I could barely move. Sipping rehydration sachets slowly and resting was all I could do. The vomiting eventually stopped and over 48 hours I gradually recovered.',date:d(32)},
+  {tag:'Prochlorperazine for nausea',stars:7,text:'GP prescribed anti-nausea tablets when I couldn\'t keep water down. They worked within an hour and meant I could start rehydrating properly. Wouldn\'t have managed without them.',date:d(65)}
+]},
+stomach_ulcers:{type:'illness',title:'Stomach Ulcers (Peptic Ulcers)',def:'Stomach ulcers are open sores that develop on the lining of the stomach. They are usually caused by H. pylori bacteria or long-term use of anti-inflammatory medicines. The main symptom is a burning or gnawing pain in the stomach.',src:'Source: NHS.uk',kw:'stomach ulcer peptic H pylori pain burning NSAID',comments:[
+  {tag:'PPI and H. pylori eradication',stars:8,text:'Triple therapy killed the H. pylori infection and a course of omeprazole healed the ulcer. The burning pain disappeared within two weeks. Avoided NSAIDs completely afterwards as instructed.',date:d(150)},
+  {tag:'Antacids for short-term relief',stars:5,text:'Antacids provided temporary relief from the burning sensation but obviously didn\'t treat the underlying cause. Useful for getting through the night while waiting for the proper treatment to work.',date:d(160)}
+]},
+// ── SKIN ──
+eczema:{type:'illness',title:'Eczema (Atopic)',def:'Atopic eczema is a condition that causes the skin to become itchy, dry, cracked and sore. It is a long-term condition for most people, although it can significantly improve in some children as they get older.',src:'Source: NHS.uk',kw:'eczema atopic skin itchy dry rash flare',comments:[
+  {tag:'Emollient moisturiser',stars:8,text:'Applying a thick emollient two or three times a day keeps flare-ups far less frequent. The key is doing it religiously even when skin looks fine. Skipping even a few days and you notice the difference.',date:d(85)},
+  {tag:'Hydrocortisone cream',stars:7,text:'Works quickly on flare-ups — redness and itching reduce within a day or two. Only use short-term as directed but very effective for getting a bad patch under control quickly.',date:d(30)}
+]},
+acne:{type:'illness',title:'Acne',def:'Acne is a common skin condition that causes spots, oily skin and sometimes skin that\'s hot or painful to touch. It most commonly develops on the face, back and chest.',src:'Source: NHS.uk',kw:'acne spots pimples oily skin breakouts',comments:[
+  {tag:'Adapalene gel (Differin)',stars:8,text:'Takes 8–12 weeks to see real results and skin gets worse before it gets better. Stick with it — after three months my skin was significantly clearer. Use every night and always wear SPF in the morning.',date:d(100)},
+  {tag:'Doxycycline',stars:7,text:'Skin improved noticeably within a month. Not a permanent fix — acne returned when I stopped — but it gave my skin a real reset and worked best used alongside a topical treatment.',date:d(50)}
+]},
+hay_fever:{type:'illness',title:'Hay Fever (Allergic Rhinitis)',def:'Hay fever is an allergic reaction to pollen causing sneezing, a runny or blocked nose, itchy and watery eyes, and an itchy throat. It is usually worse between March and September when pollen counts are high.',src:'Source: NHS.uk',kw:'hay fever pollen allergy rhinitis sneezing itchy eyes',comments:[
+  {tag:'Cetirizine',stars:8,text:'Non-drowsy antihistamine that actually works. Taken daily throughout pollen season it keeps symptoms well controlled. Far better for me than loratadine. Game changer for something that used to ruin my summers.',date:d(14)},
+  {tag:'Beconase nasal spray',stars:9,text:'Used a nasal steroid spray from March onwards and barely noticed pollen season this year. Takes a couple of weeks to build up but then works consistently throughout. Should be the first thing people try.',date:d(40)}
+]},
+contact_dermatitis:{type:'illness',title:'Contact Dermatitis',def:'Contact dermatitis is a type of eczema triggered by contact with a particular substance. It causes the skin to become red, blistered, dry and cracked. It can be caused by an allergy or direct damage to the skin from an irritant.',src:'Source: NHS.uk',kw:'contact dermatitis skin allergy irritant reaction rash',comments:[
+  {tag:'Hydrocortisone and avoidance',stars:7,text:'Identified the trigger was a new washing powder. Switched products and used hydrocortisone cream on the rash for five days. The rash cleared completely and hasn\'t returned since I changed products.',date:d(25)},
+  {tag:'Emollients',stars:6,text:'Used a plain emollient regularly on the affected skin to repair the barrier and reduce the reaction. Slow improvement over two to three weeks but sustained. Avoiding the trigger was the most important step.',date:d(50)}
+]},
+athletes_foot:{type:'illness',title:'Fungal Infections (Athlete\'s Foot)',def:'Athlete\'s foot is a common fungal infection that affects the skin between the toes and on the feet. It causes itching, flaking, scaling and sometimes cracked skin. It is contagious and spread in warm, moist environments.',src:'Source: NHS.uk',kw:'athletes foot fungal infection toes itching flaking tinea',comments:[
+  {tag:'Clotrimazole cream',stars:8,text:'Applied clotrimazole cream twice a day as directed and continued for a full two weeks after symptoms cleared. Infection resolved completely. The mistake most people make is stopping too soon when it looks better.',date:d(20)},
+  {tag:'Terbinafine spray',stars:8,text:'Spray form was easier to apply between the toes than cream. Cleared the infection within two weeks. Also switched to moisture-wicking socks and let feet breathe as much as possible to prevent recurrence.',date:d(45)}
+]},
+// ── METABOLIC ──
+type2_diabetes:{type:'illness',title:'Type 2 Diabetes',def:'Type 2 diabetes is a common condition that causes the level of sugar in the blood to become too high. Symptoms include excessive thirst, needing to urinate often, fatigue and blurred vision. Long-term it can cause serious complications.',src:'Source: NHS.uk',kw:'type 2 diabetes blood sugar glucose insulin resistance',comments:[
+  {tag:'Metformin',stars:7,text:'Stomach issues were significant in the first few weeks but easing into the dose gradually and taking it with food helped. Blood sugar came down steadily and my HbA1c improved considerably at the next check.',date:d(180)},
+  {tag:'Low carb diet',stars:9,text:'Cut out bread, rice and sugary drinks significantly. Within three months my readings were back in normal range. My GP was genuinely surprised. Takes real commitment but the results are worth it.',date:d(200)}
+]},
+high_blood_pressure:{type:'illness',title:'High Blood Pressure (Hypertension)',def:'High blood pressure, or hypertension, rarely has noticeable symptoms but if untreated increases the risk of heart attacks, strokes and kidney disease. It is usually only found during a routine check-up.',src:'Source: NHS.uk',kw:'hypertension high blood pressure heart cardiovascular stroke',comments:[
+  {tag:'Amlodipine',stars:7,text:'Readings came down well within the first couple of weeks. Had some ankle swelling initially which my GP said was common and it did ease. Easy once-a-day tablet and blood pressure has stayed well controlled.',date:d(100)},
+  {tag:'Reducing salt and alcohol',stars:6,text:'Made real dietary changes — cut added salt and reduced alcohol — and my blood pressure dropped enough that my GP agreed to hold off on medication for now. Takes discipline but it genuinely works.',date:d(150)}
+]},
+high_cholesterol:{type:'illness',title:'High Cholesterol',def:'High cholesterol means you have too much of a fatty substance called cholesterol in your blood. It is mainly caused by eating fatty food, not exercising enough, being overweight, smoking and drinking alcohol. It raises the risk of heart disease and stroke.',src:'Source: NHS.uk',kw:'high cholesterol LDL statin heart disease lipid',comments:[
+  {tag:'Atorvastatin',stars:7,text:'Cholesterol dropped significantly within the first blood test after starting statins. Had some mild muscle aches in the first month which settled. Now my levels are well within the healthy range consistently.',date:d(120)},
+  {tag:'Diet and exercise changes',stars:7,text:'Cut saturated fat, increased oily fish and started exercising five days a week. Got my LDL down by about 20% before my GP prescribed statins. Lifestyle changes alone can make a real measurable difference.',date:d(80)}
+]},
+obesity:{type:'illness',title:'Obesity',def:'Obesity is defined as having too much body fat. It is measured using body mass index (BMI). In adults, a BMI of 30 or more is defined as obese. Obesity increases the risk of several serious health conditions.',src:'Source: NHS.uk',kw:'obesity weight BMI overweight diet exercise metabolism',comments:[
+  {tag:'Structured NHS weight loss programme',stars:7,text:'Joined an NHS referral programme with regular check-ins, dietary support and an exercise plan. The accountability made a real difference. Lost weight steadily and more importantly built habits that have lasted.',date:d(200)},
+  {tag:'Calorie counting with app',stars:6,text:'Used a food logging app religiously for six months. The main benefit was awareness — I had no idea how many calories were in some of my regular meals. The weight came off slowly but consistently with no other changes.',date:d(130)}
+]},
+heart_disease:{type:'illness',title:'Heart Disease',def:'Heart disease, or coronary heart disease, is a major cause of death in the UK. It occurs when the heart\'s blood supply is blocked or interrupted by a build-up of fatty substances in the coronary arteries.',src:'Source: NHS.uk',kw:'heart disease coronary angina arteries cholesterol',comments:[
+  {tag:'Aspirin and statins',stars:7,text:'After my diagnosis I was prescribed a daily low-dose aspirin and a statin. Combined with significant lifestyle changes I\'ve had no further cardiac events in three years. The medication is easy to tolerate daily.',date:d(300)},
+  {tag:'Cardiac rehabilitation',stars:9,text:'The cardiac rehab programme after my heart attack was invaluable. It combined supervised exercise, dietary education and psychological support. I came out of it fitter and better informed than before the event.',date:d(250)}
+]},
+stroke:{type:'illness',title:'Stroke',def:'A stroke is a serious life-threatening medical condition that happens when the blood supply to part of the brain is cut off. Symptoms include face drooping, arm weakness and speech difficulty. It requires immediate medical attention.',src:'Source: NHS.uk',kw:'stroke FAST brain blood supply TIA',comments:[
+  {tag:'Aspirin (secondary prevention)',stars:7,text:'Prescribed aspirin after a TIA to prevent a full stroke. The prescription alongside blood pressure medication and a statin has kept me stable. The importance of taking all three consistently cannot be overstated.',date:d(180)},
+  {tag:'Speech and physiotherapy rehab',stars:8,text:'Post-stroke rehabilitation was slow and demanding but the improvements were real and cumulative. Six months of consistent physiotherapy and speech therapy got me back to near-normal functioning.',date:d(400)}
+]},
+// ── OTHER ──
+uti:{type:'illness',title:'Urinary Tract Infection (UTI)',def:'A urinary tract infection (UTI) is an infection in any part of the urinary system. Symptoms include a burning sensation when urinating, needing to urinate more often, cloudy urine and pain in the lower abdomen.',src:'Source: NHS.uk',kw:'UTI urinary tract infection burning urination bladder',comments:[
+  {tag:'Trimethoprim antibiotics',stars:8,text:'Antibiotics worked within 24 hours — the burning sensation started easing the same day. Completed the full course and the infection cleared completely. Also drank a lot of water throughout which seemed to help.',date:d(12)},
+  {tag:'Cystitis sachets',stars:5,text:'The alkalising sachets made urinating slightly less painful and helped while waiting to see if I needed antibiotics. They don\'t treat the infection but reduce the burning. Mild infections sometimes resolve without antibiotics if caught very early.',date:d(30)}
+]},
+conjunctivitis:{type:'illness',title:'Conjunctivitis (Pink Eye)',def:'Conjunctivitis is redness and inflammation of the conjunctiva — the tissue covering the white of the eye. It is usually caused by a viral or bacterial infection, or an allergic reaction. It often clears up on its own within one to two weeks.',src:'Source: NHS.uk',kw:'conjunctivitis pink eye red eye discharge infection',comments:[
+  {tag:'Chloramphenicol eye drops',stars:8,text:'Antibiotic drops resolved the bacterial conjunctivitis within three days. Applied four times a day as directed. One eye cleared first and then the other followed a day later. Very effective and easy to use.',date:d(18)},
+  {tag:'Warm compress and hygiene',stars:6,text:'For viral conjunctivitis there\'s no specific treatment. Warm compresses helped with the discomfort and being very strict about not touching my eyes and regular hand washing stopped it spreading to the other eye.',date:d(35)}
+]},
+dental_pain:{type:'illness',title:'Dental Pain / Toothache',def:'Toothache refers to pain around the teeth or jaws. It may be caused by a dental cavity, cracked tooth, gum disease or infection. Dental pain should always be assessed by a dentist. Over-the-counter painkillers can provide short-term relief.',src:'Source: NHS.uk',kw:'toothache dental pain cavity infection gum abscess',comments:[
+  {tag:'Ibuprofen',stars:8,text:'NHS dental line suggested ibuprofen and it worked within half an hour. Liquid form was faster than tablets. Completely controlled the pain until I could see a dentist two days later. Reliable and effective.',date:d(22)},
+  {tag:'Clove oil',stars:5,text:'Applied clove oil directly to the affected tooth with a cotton bud. Provided immediate numbing for about 30–45 minutes. Doesn\'t last long but useful as a temporary measure between doses of ibuprofen.',date:d(40)}
+]},
+menstrual_cramps:{type:'illness',title:'Menstrual Cramps',def:'Menstrual cramps are throbbing or cramping pains in the lower abdomen that many women experience before and during their period. The pain can range from mild to severe and in some cases affects daily activities.',src:'Source: NHS.uk',kw:'menstrual cramps period pain dysmenorrhea',comments:[
+  {tag:'Ibuprofen',stars:9,text:'Ibuprofen is the most effective thing I\'ve found for period cramps. Starting the day before my period and taking it consistently through the first two days keeps the pain at a very manageable level. A complete game changer.',date:d(8)},
+  {tag:'Heat pad',stars:7,text:'A hot water bottle or heat pad applied to the lower abdomen for 20–30 minutes provides genuine relief and is something I use alongside ibuprofen during the worst days. The warmth relaxes the muscle spasms.',date:d(20)}
+]},
+pms:{type:'illness',title:'Premenstrual Syndrome (PMS)',def:'PMS is the name given to the physical, psychological and behavioural symptoms that can occur in the one to two weeks before a woman\'s monthly period. Symptoms can include mood changes, bloating, fatigue, breast tenderness and headaches.',src:'Source: NHS.uk',kw:'PMS premenstrual syndrome mood hormones bloating',comments:[
+  {tag:'Lifestyle changes (exercise and diet)',stars:7,text:'Regular exercise in the week before my period and reducing salt and caffeine made a noticeable difference to bloating and mood. Not a complete fix but meaningfully reduced the severity of symptoms.',date:d(45)},
+  {tag:'Evening primrose oil',stars:5,text:'Tried evening primrose oil for breast tenderness specifically. Some improvement after a couple of months. The evidence is limited but it helped enough for me to continue taking it.',date:d(90)}
+]},
+haemorrhoids:{type:'illness',title:'Haemorrhoids (Piles)',def:'Haemorrhoids, also called piles, are swellings containing enlarged blood vessels found inside or around the rectum and anus. Symptoms include bleeding after passing a stool, itching around the anus and pain or discomfort.',src:'Source: NHS.uk',kw:'haemorrhoids piles bleeding rectum itching discomfort',comments:[
+  {tag:'Anusol cream and lifestyle',stars:7,text:'Anusol cream provided relief from the itching and discomfort within a few days. Combined with increasing fibre intake and fluid intake to soften stools, the haemorrhoids resolved over about two weeks.',date:d(30)},
+  {tag:'Sitz baths',stars:6,text:'Sitting in warm water for 15 minutes a couple of times a day genuinely helped with the discomfort. Inexpensive and easy to do. Used alongside topical cream for better overall relief.',date:d(50)}
+]},
+anaemia:{type:'illness',title:'Anaemia (Iron Deficiency)',def:'Iron deficiency anaemia is the most common type of anaemia. It occurs when the body does not have enough iron, resulting in the production of fewer red blood cells. Symptoms include fatigue, breathlessness, pale skin, and heart palpitations.',src:'Source: NHS.uk',kw:'anaemia iron deficiency fatigue pale breathless',comments:[
+  {tag:'Ferrous sulfate iron tablets',stars:7,text:'Iron levels came up steadily over about eight weeks of taking ferrous sulfate daily. Fatigue and breathlessness improved noticeably. Had to be patient — it takes time. Taking with vitamin C helped absorption.',date:d(70)},
+  {tag:'Dietary iron increase',stars:6,text:'Increased red meat, leafy greens and lentils alongside the supplements. After two blood tests my levels were back in the normal range. The dietary approach complemented the supplements well.',date:d(90)}
+]},
+// ── TREATMENTS ──
+paracetamol:{type:'treatment',title:'Paracetamol',def:'Paracetamol is one of the most commonly used medicines for pain relief and reducing a high temperature. Used for headaches, muscle aches, toothache and colds. Safe for most people at the correct dose.',src:'Source: NHS.uk',kw:'paracetamol acetaminophen pain fever headache temperature',comments:[
+  {tag:'Tension headache',stars:8,text:'Works reliably on tension headaches within 20–30 minutes. Gentler on the stomach than ibuprofen and can be taken on an empty stomach. My first choice for most mild to moderate pain.',date:d(5)},
+  {tag:'Cold and flu',stars:7,text:'Brilliant for bringing down a temperature. Doesn\'t treat the virus but makes you feel significantly less awful, especially at night. Standard first port of call when anyone in my family is unwell.',date:d(18)},
+  {tag:'Post-surgery',stars:6,text:'Prescribed regular paracetamol after minor surgery and it worked well enough for the first two days. By day three I needed something stronger but as a starting point it was surprisingly effective.',date:d(35)}
+]},
+ibuprofen:{type:'treatment',title:'Ibuprofen',def:'Ibuprofen is a widely-used anti-inflammatory painkiller (NSAID) available over the counter. Used to relieve pain, reduce fever and ease inflammation. Commonly used for headaches, period pain, back pain and muscle aches. Always take with food.',src:'Source: NHS.uk',kw:'ibuprofen NSAID pain relief anti-inflammatory fever',comments:[
+  {tag:'Toothache',stars:8,text:'Liquid ibuprofen cut through toothache within about half an hour. Liquid form acts faster than tablets for me. Still had to see the dentist but it made the wait bearable.',date:d(10)},
+  {tag:'Period pain',stars:9,text:'Starting the day before my period and taking consistently through the first two days keeps the cramps at a very manageable level. The most effective thing I\'ve found for this.',date:d(6)},
+  {tag:'Osteoarthritis',stars:7,text:'Taken regularly with food for arthritis pain. Has reduced inflammation noticeably and kept me mobile when flare-ups would otherwise have me bedridden. Worth monitoring stomach health if using long-term.',date:d(180)},
+  {tag:'Sciatica',stars:6,text:'800mg provided meaningful relief for a few hours at a time. Not a cure but enough to keep functioning. Important to take with food. Prolonged use caused some heartburn for me.',date:d(50)}
+]},
+aspirin:{type:'treatment',title:'Aspirin',def:'Aspirin is used to relieve mild to moderate pain and fever. At a low dose it is also taken as a blood thinner to prevent heart attacks and strokes in people at risk. It should not be given to children under 16.',src:'Source: NHS.uk',kw:'aspirin pain blood thinner antiplatelet heart stroke prevention',comments:[
+  {tag:'Headache',stars:6,text:'Effective for mild headaches but I find it harder on my stomach than paracetamol. Works within 30–45 minutes but I tend to reach for paracetamol first now. Always take with food.',date:d(30)},
+  {tag:'Secondary prevention (heart)',stars:8,text:'Taking 75mg aspirin daily after my cardiac event as prescribed. Easy to tolerate at this dose and gives me peace of mind that I\'m reducing my risk of another episode. Will be on it indefinitely.',date:d(200)}
+]},
+naproxen:{type:'treatment',title:'Naproxen',def:'Naproxen is a non-steroidal anti-inflammatory drug (NSAID) used to reduce pain and inflammation. It is used for conditions such as rheumatoid arthritis, osteoarthritis, gout, period pain and muscle pain. It lasts longer than ibuprofen.',src:'Source: NHS.uk',kw:'naproxen NSAID anti-inflammatory arthritis pain gout',comments:[
+  {tag:'Arthritis flare',stars:8,text:'Naproxen works for longer than ibuprofen for my arthritis — twice a day is enough rather than every four to six hours. Stomach was sensitive so I take it with food and a PPI alongside.',date:d(60)},
+  {tag:'Gout',stars:8,text:'Prescribed naproxen for an acute gout attack and the pain started reducing within a few hours. Far better than I expected for something so intensely painful. Completed a five-day course.',date:d(90)}
+]},
+codeine:{type:'treatment',title:'Codeine',def:'Codeine is a mild opioid painkiller used to treat pain that has not responded to paracetamol or ibuprofen. It is also used to treat diarrhoea and dry coughs. It can cause dependence and should only be used short-term.',src:'Source: NHS.uk',kw:'codeine opioid mild painkiller prescription co-codamol',comments:[
+  {tag:'Post-operative pain',stars:7,text:'Co-codamol after surgery when paracetamol alone wasn\'t enough. Provided significantly stronger relief. Made me drowsy and constipated so I used it only for the two worst days then switched back to paracetamol alone.',date:d(40)},
+  {tag:'Severe back pain',stars:6,text:'Effective for acute severe back pain but the side effects — constipation, drowsiness and a foggy head — mean it\'s not something I\'d want to use for more than a few days. Strictly short-term for me.',date:d(70)}
+]},
+antihistamines:{type:'treatment',title:'Antihistamines (Cetirizine, Loratadine)',def:'Antihistamines are medicines used to relieve allergy symptoms such as hay fever, hives, and reactions to insect bites. Non-drowsy versions are suitable for daytime use. Some drowsy versions can help with short-term sleep problems.',src:'Source: NHS.uk',kw:'antihistamine cetirizine loratadine allergy hay fever hives',comments:[
+  {tag:'Hay fever',stars:8,text:'Cetirizine has been the most effective antihistamine after trying several. Taken first thing in the morning it keeps hay fever symptoms well controlled all day without making me drowsy at all.',date:d(10)},
+  {tag:'Hive reaction',stars:7,text:'After a hive reaction antihistamines brought down the itching and swelling within a couple of hours. Needed to take them for a few days before things fully settled but they were genuinely helpful.',date:d(30)}
+]},
+decongestants:{type:'treatment',title:'Decongestants (Pseudoephedrine)',def:'Decongestants relieve nasal congestion caused by colds, sinusitis and hay fever. They work by narrowing the blood vessels in the nasal passages, reducing swelling and congestion. They are available as tablets, nasal sprays and liquids.',src:'Source: NHS.uk',kw:'decongestant pseudoephedrine nasal congestion blocked nose cold sinusitis',comments:[
+  {tag:'Sinusitis congestion',stars:7,text:'Pseudoephedrine tablets cleared a severely blocked nose within an hour. Relief lasted four to six hours. Didn\'t use for more than three days as advised. Very effective for acute sinusitis congestion.',date:d(20)},
+  {tag:'Cold congestion',stars:6,text:'Nasal decongestant spray gave almost immediate relief from blocked nose. Crucial not to use for more than a week as rebound congestion can be worse than the original symptoms. Very effective short-term.',date:d(8)}
+]},
+cough_syrup:{type:'treatment',title:'Cough Syrup (Dextromethorphan)',def:'Cough syrups containing dextromethorphan are used to suppress dry, irritating coughs. They act on the brain\'s cough reflex. Other formulations containing guaifenesin help loosen and clear mucus from a productive cough.',src:'Source: NHS.uk',kw:'cough syrup dextromethorphan suppressant bronchitis viral',comments:[
+  {tag:'Dry night cough',stars:6,text:'The cough suppressant helped significantly at night, allowing me to get several hours of sleep rather than waking constantly. Not a cure but meaningful relief during the most disruptive period of a chest infection.',date:d(12)},
+  {tag:'Viral cough',stars:5,text:'Provided some relief but I found honey and warm lemon almost as effective for a regular viral cough. The syrup helped most for the very dry, tickling type of cough that won\'t settle.',date:d(25)}
+]},
+nasal_sprays:{type:'treatment',title:'Nasal Sprays (Saline & Steroid)',def:'Saline nasal sprays rinse the nasal passages and help with congestion. Steroid nasal sprays reduce inflammation and are used for persistent allergic rhinitis, hay fever and nasal polyps. Steroid sprays need consistent use to be effective.',src:'Source: NHS.uk',kw:'nasal spray saline steroid hay fever rhinitis congestion sinusitis beconase',comments:[
+  {tag:'Hay fever (steroid spray)',stars:9,text:'Used from March onwards and barely noticed pollen season this year compared to previous years. Takes two weeks to build up to full effect but then consistent and effective throughout. Should be the first thing people try.',date:d(30)},
+  {tag:'Sinusitis (saline rinse)',stars:8,text:'Saline nasal rinsing twice a day cleared sinusitis congestion far better than any oral decongestant. Feels strange at first but the immediate relief afterwards is significant and lasts for hours.',date:d(18)}
+]},
+throat_lozenges:{type:'treatment',title:'Throat Lozenges',def:'Throat lozenges contain local anaesthetics, antiseptics or anti-inflammatories that provide temporary relief from sore throat pain. They work by increasing saliva production and delivering active ingredients to the affected tissue.',src:'Source: NHS.uk',kw:'throat lozenges sore throat pain relief strepsils',comments:[
+  {tag:'Sore throat',stars:6,text:'Strepsils provided good temporary relief from sore throat pain for about two hours. Not a treatment but made eating and drinking much easier during the most painful days. Combined well with ibuprofen.',date:d(7)},
+  {tag:'Post-tonsillitis',stars:5,text:'Useful for the residual soreness after the acute infection cleared. Not as effective as proper painkillers for the worst pain but a gentler option once things were improving.',date:d(22)}
+]},
+antibiotics:{type:'treatment',title:'Antibiotics (Amoxicillin, Penicillin)',def:'Antibiotics are medicines that help treat infections caused by bacteria. They do not work against viral infections. Amoxicillin and penicillin are common broad-spectrum antibiotics used for chest infections, skin infections, dental infections and more.',src:'Source: NHS.uk',kw:'antibiotics amoxicillin penicillin bacterial infection prescription',comments:[
+  {tag:'Chest infection',stars:8,text:'Amoxicillin prescribed for a bacterial chest infection. Started feeling better within 48 hours and by the end of the five-day course the infection had cleared completely. Essential to finish the full course.',date:d(25)},
+  {tag:'Dental abscess',stars:8,text:'Metronidazole prescribed for a dental abscess alongside dental treatment. The swelling and pain started reducing within 24 hours of starting the course. Needed both the antibiotic and the dental procedure together.',date:d(40)}
+]},
+antivirals:{type:'treatment',title:'Antivirals',def:'Antiviral medicines treat certain viral infections. They work by interfering with the ability of viruses to replicate. Examples include oseltamivir (Tamiflu) for influenza and aciclovir for herpes infections including shingles and cold sores.',src:'Source: NHS.uk',kw:'antivirals tamiflu oseltamivir aciclovir flu herpes shingles',comments:[
+  {tag:'Flu (Tamiflu)',stars:7,text:'Got Tamiflu within 48 hours of flu onset and while it didn\'t eliminate the illness it appeared to reduce severity and shortened recovery by about two days compared to previous flu episodes.',date:d(35)},
+  {tag:'Shingles (Aciclovir)',stars:8,text:'Prescribed aciclovir at the first appearance of the shingles rash. Starting it early is crucial — it significantly reduced the severity of the outbreak and I had minimal post-herpetic pain afterwards.',date:d(80)}
+]},
+antifungal_creams:{type:'treatment',title:'Antifungal Creams (Clotrimazole)',def:'Antifungal creams treat fungal infections of the skin. Clotrimazole is commonly used for athlete\'s foot, ringworm, and thrush. It works by killing the fungal cells causing the infection. Treatment is usually one to two weeks.',src:'Source: NHS.uk',kw:'antifungal clotrimazole cream athletes foot ringworm thrush canesten',comments:[
+  {tag:'Athlete\'s foot',stars:8,text:'Applied twice daily for two weeks as directed and continued for a week after symptoms cleared. Infection resolved completely. The mistake most people make is stopping too soon.',date:d(15)},
+  {tag:'Ringworm',stars:7,text:'Clotrimazole cleared the ringworm patch within about 10 days of consistent application. Kept applying for the full recommended two weeks to prevent recurrence. Effective and easy to use.',date:d(30)}
+]},
+antiseptic_creams:{type:'treatment',title:'Antiseptic Creams',def:'Antiseptic creams help prevent infection in minor cuts, grazes, burns and bites. They contain ingredients such as cetrimide, chlorhexidine or iodine that kill or inhibit the growth of microorganisms on the skin.',src:'Source: NHS.uk',kw:'antiseptic cream wound cut graze infection prevention',comments:[
+  {tag:'Minor cut',stars:7,text:'Applying antiseptic cream after cleaning the wound and keeping it covered helped it heal without any sign of infection. Changed the dressing daily. Simple but important step for wound care.',date:d(8)},
+  {tag:'Insect bite',stars:6,text:'Applied antiseptic cream to a bite that was looking inflamed and infected. Settled within a couple of days without needing antibiotics. Caught it early which was probably why.',date:d(14)}
+]},
+oral_rehydration:{type:'treatment',title:'Oral Rehydration Salts',def:'Oral rehydration salts (ORS) are used to treat dehydration caused by diarrhoea or vomiting. They contain a precise balance of salts and sugar to help the body absorb fluids more effectively than plain water.',src:'Source: NHS.uk',kw:'oral rehydration salts dioralyte electrolytes dehydration diarrhoea vomiting',comments:[
+  {tag:'Gastroenteritis',stars:8,text:'Rehydration sachets were the most useful thing during a bad gastroenteritis episode. Plain water wasn\'t replacing the electrolytes and I was feeling faint. The sachets sorted this within a few hours.',date:d(20)},
+  {tag:'Food poisoning',stars:8,text:'Couldn\'t keep fluids down initially but sipping very small amounts of rehydration solution every few minutes eventually worked. Once I could keep it down my recovery accelerated significantly.',date:d(40)}
+]},
+ssris:{type:'treatment',title:'SSRIs (e.g. Sertraline)',def:'Selective serotonin reuptake inhibitors (SSRIs) are a widely prescribed type of antidepressant. They help treat depression, anxiety disorders, OCD and PTSD. They typically take several weeks to have full effect.',src:'Source: NHS.uk',kw:'SSRI sertraline fluoxetine antidepressant depression anxiety',comments:[
+  {tag:'Depression',stars:7,text:'Took around six to eight weeks to feel a real difference. The first two weeks were harder — more anxious and unsettled. After that the low mood started lifting gradually. Glad I stuck with it.',date:d(150)},
+  {tag:'OCD',stars:8,text:'Noticed a significant reduction in the frequency and intensity of intrusive thoughts after about two months. Combined with therapy it has made a substantial difference to everyday functioning.',date:d(200)}
+]},
+anti_anxiety_meds:{type:'treatment',title:'Anti-Anxiety Medications',def:'Anti-anxiety medications include several types including SSRIs, SNRIs, buspirone, and in some cases short-term use of benzodiazepines. The appropriate medication depends on the type and severity of anxiety.',src:'Source: NHS.uk',kw:'anti-anxiety diazepam buspirone beta blocker propranolol panic',comments:[
+  {tag:'Propranolol (performance anxiety)',stars:7,text:'A low dose of propranolol before high-pressure situations — presentations, exams — stops the physical symptoms of anxiety: racing heart, shaking voice. Doesn\'t help with the psychological side but takes the physical edge off.',date:d(25)},
+  {tag:'Diazepam (short-term)',stars:6,text:'Prescribed very short-term for an acute anxiety crisis. Effective at calming things quickly but not a long-term solution. My GP was very clear it was only for crisis use alongside therapy.',date:d(80)}
+]},
+sleeping_tablets:{type:'treatment',title:'Sleeping Tablets (Short-Term)',def:'Short-term sleeping tablets such as zopiclone may be prescribed for severe insomnia. They are not suitable for long-term use due to the risk of dependence. They should be used alongside addressing the underlying cause.',src:'Source: NHS.uk',kw:'sleeping tablets zopiclone insomnia sleep short term',comments:[
+  {tag:'Zopiclone',stars:6,text:'Prescribed for two weeks during a period of crisis-related insomnia. Worked very effectively — I got my first proper sleep in weeks. Aware of the dependency risk so I didn\'t request more when they ran out.',date:d(60)},
+  {tag:'Short bridge course',stars:5,text:'Used as a short bridge while waiting for CBT-I to have an effect. Did the job for four weeks but I was very aware of the need to use it as a short-term tool, not a solution. The CBT-I eventually worked.',date:d(100)}
+]},
+cbt_therapy:{type:'treatment',title:'Therapy / CBT',def:'Cognitive behavioural therapy (CBT) is a talking therapy that helps manage problems by changing the way you think and behave. It is most commonly used for anxiety and depression but is also effective for OCD, PTSD, phobias and insomnia.',src:'Source: NHS.uk',kw:'CBT therapy cognitive behavioural talking therapy mental health counselling',comments:[
+  {tag:'Anxiety',stars:10,text:'Without doubt the most effective treatment I\'ve tried for anxiety. Learning to recognise and challenge unhelpful thought patterns has been genuinely life-changing. I still refer to my notes from sessions regularly.',date:d(200)},
+  {tag:'OCD',stars:8,text:'CBT with an OCD specialist using ERP was difficult but genuinely effective. The first sessions were uncomfortable but the gradual reduction in compulsions over weeks was remarkable.',date:d(150)},
+  {tag:'Depression',stars:9,text:'Medication got me functional enough to engage with CBT and the therapy gave me lasting tools. Over a year later without a significant relapse. Strongly recommend the combination approach.',date:d(180)}
+]},
+ace_inhibitors:{type:'treatment',title:'Blood Pressure Meds (ACE Inhibitors)',def:'ACE inhibitors are a group of medicines used to treat high blood pressure and heart failure. They work by preventing the action of a hormone that narrows blood vessels. Common examples include ramipril and lisinopril.',src:'Source: NHS.uk',kw:'ACE inhibitor ramipril lisinopril blood pressure heart failure',comments:[
+  {tag:'Hypertension',stars:7,text:'Ramipril brought my blood pressure down to a normal range within two to three weeks. Developed a persistent dry cough which is a known side effect — my GP switched me to an ARB which I tolerate better.',date:d(120)},
+  {tag:'Heart failure',stars:8,text:'Prescribed ramipril as part of heart failure management. Combined with other medications and lifestyle changes my exercise tolerance has improved considerably over six months.',date:d(200)}
+]},
+beta_blockers:{type:'treatment',title:'Beta Blockers',def:'Beta blockers are a group of medicines used to treat heart conditions, high blood pressure, anxiety and migraines. They work by slowing the heart rate and reducing blood pressure. Examples include propranolol, atenolol and bisoprolol.',src:'Source: NHS.uk',kw:'beta blocker propranolol atenolol bisoprolol heart rate blood pressure migraine',comments:[
+  {tag:'Migraine prevention',stars:8,text:'Low-dose propranolol daily reduced my migraines from several a month to almost none. Took a few weeks to build up. Some fatigue initially but it settled. Has made a huge difference to my daily life.',date:d(90)},
+  {tag:'Atrial fibrillation',stars:7,text:'Bisoprolol prescribed to control my heart rate in AF. Rate is now well controlled and palpitations are much less frequent. Easy once-daily tablet with manageable side effects.',date:d(150)}
+]},
+statins:{type:'treatment',title:'Statins (Cholesterol)',def:'Statins are medicines that lower the level of LDL cholesterol in the blood. They are used to reduce the risk of cardiovascular disease in people with high cholesterol. Common statins include atorvastatin and simvastatin.',src:'Source: NHS.uk',kw:'statin atorvastatin simvastatin cholesterol LDL cardiovascular',comments:[
+  {tag:'High cholesterol',stars:7,text:'Cholesterol dropped significantly after the first blood test on atorvastatin. Had some mild muscle aches in the first month which settled. Now consistently in the healthy range. Easy to tolerate daily.',date:d(100)},
+  {tag:'Post-cardiac event',stars:8,text:'Prescribed a high-dose statin after my heart attack. Combined with other medications my cholesterol is now at a level my cardiologist is happy with. An essential part of my long-term management.',date:d(250)}
+]},
+insulin:{type:'treatment',title:'Insulin',def:'Insulin is a hormone produced in the pancreas that allows glucose from food to enter cells and be used for energy. People with type 1 diabetes require insulin injections. Some people with type 2 diabetes also need insulin.',src:'Source: NHS.uk',kw:'insulin type 1 diabetes injection basal bolus blood sugar',comments:[
+  {tag:'Type 1 diabetes management',stars:8,text:'Using a basal-bolus insulin regime with a continuous glucose monitor has given me far better control than I\'ve had in years. The learning curve was steep but the technology makes management so much more precise.',date:d(180)},
+  {tag:'Transition from tablets (type 2)',stars:6,text:'Moving to insulin was a difficult psychological step but my diabetes nurse was excellent throughout. Blood sugar is now better controlled than it was on tablets alone. The injections become routine very quickly.',date:d(250)}
+]},
+metformin:{type:'treatment',title:'Metformin',def:'Metformin is the first-line medication for type 2 diabetes. It works by reducing the amount of glucose released from the liver and improving insulin sensitivity. It is also used in PCOS treatment.',src:'Source: NHS.uk',kw:'metformin type 2 diabetes blood sugar PCOS insulin sensitivity',comments:[
+  {tag:'Type 2 Diabetes',stars:7,text:'Stomach problems were significant for the first three weeks but easing into the dose slowly and always eating before taking it helped. Blood sugar came down steadily and HbA1c improved at the next review.',date:d(200)},
+  {tag:'PCOS',stars:8,text:'Prescribed for PCOS alongside dietary changes. Helped regulate my cycle within a few months. The digestive side effects were annoying initially but worth persisting through for the longer-term benefits.',date:d(150)}
+]},
+antacids:{type:'treatment',title:'Antacids',def:'Antacids are medicines that neutralise stomach acid to give quick relief from indigestion, heartburn and acid reflux. They work quickly but only for a short time. Common examples include Gaviscon and Rennie.',src:'Source: NHS.uk',kw:'antacid gaviscon rennie heartburn indigestion acid reflux',comments:[
+  {tag:'Heartburn',stars:6,text:'Gaviscon provides fast relief from heartburn within about 10 minutes. Useful for occasional episodes but if you\'re using it regularly you need to address the underlying cause. Works best after eating and before bed.',date:d(12)},
+  {tag:'Acid reflux at night',stars:6,text:'A double dose of Gaviscon before bed significantly reduced night-time acid reflux while I was waiting for omeprazole to build up. Not a substitute for a PPI for regular reflux but a helpful bridge.',date:d(25)}
+]},
+ppis:{type:'treatment',title:'Proton Pump Inhibitors (Omeprazole)',def:'Proton pump inhibitors (PPIs) reduce the amount of acid your stomach makes. They are used to treat heartburn, GERD, stomach ulcers and H. pylori infection. Omeprazole and lansoprazole are common examples.',src:'Source: NHS.uk',kw:'omeprazole PPI proton pump inhibitor heartburn GERD acid ulcer',comments:[
+  {tag:'Acid reflux (GERD)',stars:8,text:'Started omeprazole and the difference was noticeable within two days. After a week the heartburn was almost completely gone. Had suffered for months before trying this and wish I\'d done it sooner.',date:d(15)},
+  {tag:'Stomach ulcer',stars:8,text:'Prescribed alongside H. pylori treatment for a stomach ulcer. The burning pain disappeared within two weeks. Continued for eight weeks in total to ensure complete healing. Very effective.',date:d(80)}
+]},
+laxatives:{type:'treatment',title:'Laxatives',def:'Laxatives are medicines that help treat constipation by either softening the stool, stimulating bowel movement, or increasing stool bulk. They are available without prescription but should be used short-term where possible.',src:'Source: NHS.uk',kw:'laxatives constipation lactulose senna movicol bowels',comments:[
+  {tag:'Lactulose',stars:6,text:'Prescribed lactulose and it worked within about 48 hours. Gentle and effective. Important to drink plenty of water alongside otherwise it doesn\'t work as well. Tasted fine.',date:d(18)},
+  {tag:'Movicol sachets',stars:7,text:'For more stubborn constipation Movicol sachets dissolved in water worked well within 24 hours. Less cramping than stimulant laxatives. My GP recommended it as a gentler option for ongoing use.',date:d(30)}
+]},
+anti_diarrhoeal:{type:'treatment',title:'Anti-Diarrhoeal Meds (Loperamide)',def:'Loperamide (Imodium) is an over-the-counter medicine used to treat short-term diarrhoea. It slows down gut movement to reduce the frequency of loose stools. It should not be used for diarrhoea with fever or blood.',src:'Source: NHS.uk',kw:'loperamide imodium diarrhoea anti-diarrhoeal bowels',comments:[
+  {tag:'Traveller\'s diarrhoea',stars:7,text:'Used loperamide when I needed to travel and couldn\'t wait for it to resolve naturally. Slowed things down effectively within one to two hours. I wouldn\'t use it as a first resort but when necessary it works quickly.',date:d(15)},
+  {tag:'IBS diarrhoea',stars:6,text:'My gastroenterologist suggested occasional use for IBS-D during flare-ups. It\'s not a solution but for managing symptoms during important events it provides useful temporary control.',date:d(40)}
+]},
+anti_nausea:{type:'treatment',title:'Anti-Nausea Medications',def:'Anti-nausea medicines are used to prevent or treat nausea and vomiting. They are prescribed for various causes including chemotherapy, morning sickness, motion sickness, gastroenteritis and post-operative nausea.',src:'Source: NHS.uk',kw:'anti-nausea prochlorperazine cyclizine ondansetron metoclopramide vomiting',comments:[
+  {tag:'Food poisoning',stars:7,text:'Prescribed prochlorperazine when I couldn\'t keep water down. It worked within an hour and meant I could start rehydrating properly. Wouldn\'t have managed to recover without it.',date:d(25)},
+  {tag:'Vertigo-related nausea',stars:6,text:'Used for the severe nausea that came with a vertigo episode. Didn\'t stop the dizziness but controlled the vomiting so I could stay at home and recover rather than going to hospital.',date:d(50)}
+]},
+salbutamol:{type:'treatment',title:'Salbutamol Inhaler',def:'Salbutamol is a reliever inhaler used to treat symptoms of asthma and COPD such as wheezing, coughing and breathlessness. It works by relaxing the muscles of the airways, making breathing easier. It acts within minutes.',src:'Source: NHS.uk',kw:'salbutamol inhaler asthma blue reliever COPD wheeze breathless',comments:[
+  {tag:'Asthma attack',stars:10,text:'Two puffs from my blue reliever and airways start opening within minutes. An absolutely essential medication that I would never leave the house without. Immediate and reliable every single time.',date:d(14)},
+  {tag:'Exercise-induced asthma',stars:9,text:'Taking two puffs 15 minutes before exercise prevents the tightening and wheezing that would otherwise stop me in my tracks. Has allowed me to get back into running after years of avoiding it.',date:d(45)}
+]},
+steroid_inhalers:{type:'treatment',title:'Steroid Inhalers (Preventer)',def:'Steroid inhalers, or preventer inhalers, are used to reduce inflammation in the airways and help prevent asthma symptoms. They must be used daily even when you feel well and take several weeks to reach full effectiveness.',src:'Source: NHS.uk',kw:'steroid inhaler preventer budesonide beclomethasone asthma brown',comments:[
+  {tag:'Asthma management',stars:8,text:'Was sceptical about using an inhaler daily when I felt fine but after three weeks of consistent use my day-to-day breathlessness dropped significantly. The key is not skipping days even when you feel well.',date:d(80)},
+  {tag:'After frequent attacks',stars:8,text:'Started a preventer inhaler after too many trips to A&E with asthma attacks. In the following year I had no attacks at all. Complete change in my management of the condition.',date:d(150)}
+]},
+nebulisers:{type:'treatment',title:'Nebulisers',def:'A nebuliser is a machine that converts liquid medication into a fine mist that can be inhaled directly into the lungs. It is used for severe asthma attacks or COPD exacerbations, often in hospital or emergency settings.',src:'Source: NHS.uk',kw:'nebuliser asthma COPD severe attack hospital emergency',comments:[
+  {tag:'Severe asthma attack',stars:8,text:'During a severe asthma attack in A&E the nebulised salbutamol worked far more effectively than my inhaler alone. The improvement over 20 minutes was significant. A genuinely impressive treatment in acute situations.',date:d(100)},
+  {tag:'COPD exacerbation',stars:7,text:'Prescribed a home nebuliser for my COPD. Using it during exacerbations has kept several episodes out of hospital that might otherwise have required admission. A significant quality of life improvement.',date:d(150)}
+]},
+hydrocortisone_cream:{type:'treatment',title:'Hydrocortisone Cream',def:'Hydrocortisone cream is a mild topical corticosteroid used to treat inflammatory skin conditions such as eczema, contact dermatitis and insect bites. It reduces redness, itching and swelling and is available over the counter at 1% strength.',src:'Source: NHS.uk',kw:'hydrocortisone cream eczema dermatitis itching redness steroid topical',comments:[
+  {tag:'Eczema flare',stars:7,text:'Works quickly on eczema flare-ups — redness and itching reduce within a day or two. Use short-term as directed alongside emollient for best results. Very effective for getting a bad patch under control.',date:d(10)},
+  {tag:'Insect bite reaction',stars:7,text:'Applied to a very swollen and itchy insect bite reaction and it reduced the swelling and itching noticeably within a few hours. Much better than antihistamine cream for me personally.',date:d(18)}
+]},
+emollients:{type:'treatment',title:'Moisturisers / Emollients',def:'Emollients are moisturising treatments applied directly to the skin to soothe and hydrate. They are used for skin conditions including eczema, psoriasis and dry skin. They should be applied regularly and generously.',src:'Source: NHS.uk',kw:'emollient moisturiser cetraben aveeno hydromol eczema dry skin',comments:[
+  {tag:'Eczema',stars:8,text:'Applying a thick emollient two or three times a day keeps flare-ups far less frequent. The key is doing it religiously even when skin looks fine. Skipping even a few days and the difference is noticeable.',date:d(60)},
+  {tag:'Dry winter skin',stars:7,text:'Started using a heavier emollient on my face and hands during winter. The improvement in skin texture and reduction in cracking was noticeable within two weeks. Simple, cheap and effective.',date:d(25)}
+]},
+benzoyl_peroxide:{type:'treatment',title:'Acne Treatments (Benzoyl Peroxide)',def:'Benzoyl peroxide is used to treat mild to moderate acne. It kills bacteria on the skin and helps unblock pores. It is available as a gel, cream or wash and can cause skin dryness and irritation, especially at first.',src:'Source: NHS.uk',kw:'benzoyl peroxide acne spots pimples treatment gel cream',comments:[
+  {tag:'Mild to moderate acne',stars:7,text:'Took about four to six weeks to see clear improvement and skin was drier at first. Using it every other night initially then building up helped my skin adjust. Good results for everyday spots.',date:d(70)},
+  {tag:'Chest and back acne',stars:7,text:'Used a 5% benzoyl peroxide wash in the shower on chest and back acne. Significant improvement within six weeks. Bleaches clothing so be careful with what you wear after applying.',date:d(100)}
+]},
+antibiotic_creams:{type:'treatment',title:'Antibiotic Creams',def:'Topical antibiotic creams are used to treat or prevent bacterial skin infections. Fucidin (fusidic acid) is commonly prescribed for impetigo and infected eczema. They should be used for the shortest possible time to reduce antibiotic resistance.',src:'Source: NHS.uk',kw:'antibiotic cream fucidin impetigo infected eczema skin infection',comments:[
+  {tag:'Impetigo',stars:8,text:'Fucidin cream cleared impetigo within about five days of twice-daily application. The crusty lesions started healing from day two. Essential to complete the full course even when it looks better.',date:d(20)},
+  {tag:'Infected eczema',stars:7,text:'When an eczema patch became infected, the antibiotic cream cleared the infection within a week. Combined with continuing the emollient and hydrocortisone the skin healed well.',date:d(35)}
+]},
+diclofenac:{type:'treatment',title:'Diclofenac',def:'Diclofenac is a non-steroidal anti-inflammatory drug (NSAID) used to relieve pain and reduce inflammation. It is available as tablets, capsules, gels and eye drops. It is used for conditions such as arthritis, gout and muscle pain.',src:'Source: NHS.uk',kw:'diclofenac NSAID voltaren anti-inflammatory arthritis gel tablets',comments:[
+  {tag:'Neck pain (gel)',stars:7,text:'Applied diclofenac gel directly to the painful area twice a day. Worked better than oral painkillers for me because it targeted the area directly with fewer systemic side effects. Improvement within two or three days.',date:d(22)},
+  {tag:'Arthritis flare',stars:7,text:'Prescribed diclofenac tablets for an arthritis flare when ibuprofen wasn\'t sufficient. More effective but harder on my stomach so I now take it with a PPI when needed. A step up in strength when required.',date:d(55)}
+]},
+muscle_relaxants:{type:'treatment',title:'Muscle Relaxants',def:'Muscle relaxants are medicines that reduce spasm and stiffness in muscles. In the UK, diazepam is sometimes used short-term for muscle spasms. Baclofen is used for spasticity in neurological conditions.',src:'Source: NHS.uk',kw:'muscle relaxant diazepam baclofen spasm stiffness back pain',comments:[
+  {tag:'Acute back muscle spasm',stars:7,text:'Prescribed a short course of diazepam for an acute muscle spasm in my back. The spasms settled significantly within 24 hours. Made me drowsy but combined with regular ibuprofen it broke the cycle of spasm and pain.',date:d(30)},
+  {tag:'Neck spasm',stars:6,text:'A three-day course of muscle relaxants alongside a heat pad and gentle movement resolved a severe neck spasm. Not something I\'d want to take long-term but very useful for the acute phase.',date:d(50)}
+]},
+steroid_tablets:{type:'treatment',title:'Steroid Tablets (Prednisolone)',def:'Steroid tablets such as prednisolone are used to treat a wide range of conditions involving inflammation including asthma attacks, inflammatory bowel disease, and some arthritis flares. They are usually used short-term.',src:'Source: NHS.uk',kw:'prednisolone steroids tablets inflammation asthma IBD arthritis',comments:[
+  {tag:'Severe asthma attack',stars:8,text:'Prescribed a five-day course of prednisolone after an acute asthma attack. The improvement in breathing was noticeable from day two and by the end of the course I was back to normal. Side effects were minimal for such a short course.',date:d(40)},
+  {tag:'Inflammatory arthritis flare',stars:7,text:'A short burst of steroids during a bad rheumatoid arthritis flare provided faster relief than anything else. Important to taper off as instructed rather than stopping abruptly.',date:d(80)}
+]},
+contraceptive_pill:{type:'treatment',title:'Contraceptive Pills',def:'Contraceptive pills are hormonal medicines used to prevent pregnancy. The combined pill contains oestrogen and progestogen. The mini pill contains only progestogen. They can also be used to manage period pain, endometriosis and PCOS.',src:'Source: NHS.uk',kw:'contraceptive pill combined mini pill hormone oestrogen progesterone',comments:[
+  {tag:'Endometriosis pain management',stars:8,text:'Taking the pill continuously (no break) for endometriosis was suggested by my gynaecologist. Dramatically reduced the severe pelvic pain I had been experiencing monthly. A significant quality of life improvement.',date:d(100)},
+  {tag:'PCOS',stars:7,text:'The combined pill regulated my cycle and reduced excess hair growth associated with PCOS. Took a couple of months for my body to adjust but has been a stable and manageable option long-term.',date:d(150)}
+]},
+hrt:{type:'treatment',title:'Hormone Replacement Therapy (HRT)',def:'HRT is a treatment used to relieve symptoms of the menopause. It replaces hormones that are at a lower level as you approach the menopause. Symptoms it treats include hot flushes, night sweats, mood changes and vaginal dryness.',src:'Source: NHS.uk',kw:'HRT hormone replacement therapy menopause hot flushes oestrogen',comments:[
+  {tag:'Menopause symptoms',stars:9,text:'Starting HRT genuinely gave me my life back. The hot flushes stopped within about two weeks and sleep improved significantly after a month. The brain fog and mood changes also lifted considerably.',date:d(80)},
+  {tag:'Transdermal patches',stars:8,text:'Switched to patches from tablets and they suit me better. More stable hormone delivery throughout the day with no pills to remember. The difference from before HRT is remarkable — I wish I\'d started sooner.',date:d(120)}
+]},
+bandages:{type:'treatment',title:'Bandages / Wound Care',def:'Wound care involves cleaning a wound to prevent infection, covering it with an appropriate dressing, and monitoring for signs of healing or infection. Bandages, gauze, sterile dressings and wound closure strips are commonly used.',src:'Source: NHS.uk',kw:'bandage wound care dressing cut graze bleeding first aid',comments:[
+  {tag:'Deep cut management',stars:7,text:'Cleaned the cut thoroughly, applied steri-strips to hold the edges together, covered with a sterile dressing and changed it daily. Healed cleanly within ten days without needing stitches.',date:d(12)},
+  {tag:'Post-surgery wound',stars:8,text:'Following the nurse\'s instructions about daily dressing changes was critical to good healing. The wound healed without infection. Clear guidance from the team made the whole process manageable at home.',date:d(30)}
+]},
+ice_heat:{type:'treatment',title:'Ice / Heat Therapy',def:'Ice packs reduce swelling and numb pain in the first 48 hours after an injury. Heat therapy relaxes muscles and improves circulation and is more useful for chronic pain or stiffness after the acute phase has passed.',src:'Source: NHS.uk',kw:'ice pack heat pad therapy injury sprain muscle pain RICE',comments:[
+  {tag:'Acute sprain (ice)',stars:8,text:'Ice pack applied for 15–20 minutes every two hours for the first 48 hours after a sprained ankle significantly reduced swelling. Combined with elevation and compression the recovery was faster than previous sprains.',date:d(10)},
+  {tag:'Chronic back pain (heat)',stars:7,text:'A heat pad for 20 minutes on my lower back each morning has become part of my daily routine. It doesn\'t cure the underlying issue but loosens things up enough that the rest of the day is significantly more comfortable.',date:d(20)}
+]},
+physiotherapy:{type:'treatment',title:'Physiotherapy',def:'Physiotherapy helps restore movement and function when someone is affected by injury, illness or disability. It involves exercise programmes, manual therapy and patient education. It is available on the NHS and privately.',src:'Source: NHS.uk',kw:'physiotherapy physio exercise rehabilitation movement function',comments:[
+  {tag:'Lower back pain',stars:9,text:'Six sessions of physio did more for my recurring back pain than years of painkillers. The exercises felt odd at first but the improvement was significant and lasting. Complete game changer for chronic pain.',date:d(90)},
+  {tag:'Knee injury rehabilitation',stars:9,text:'Post-knee injury physio got me back to running in twelve weeks following a structured programme. The progression was well managed and I finished stronger and with better technique than before the injury.',date:d(120)}
+]},
+hydration_therapy:{type:'treatment',title:'Hydration Therapy',def:'Hydration therapy refers to replacing fluids and electrolytes in the body when dehydrated due to illness, exercise or heat. This can range from oral rehydration at home to intravenous fluids in hospital settings.',src:'Source: NHS.uk',kw:'hydration therapy fluids electrolytes dehydration IV drip',comments:[
+  {tag:'IV fluids in hospital',stars:8,text:'Admitted to hospital severely dehydrated after a gastroenteritis episode. IV fluids made a dramatic difference within a few hours — from barely able to stand to feeling human again. Oral rehydration had not been sufficient.',date:d(60)},
+  {tag:'Oral rehydration at home',stars:7,text:'Managed dehydration at home with oral rehydration sachets sipped very slowly over several hours. The key is small sips consistently rather than large amounts at once. Took the whole day but avoided hospital.',date:d(30)}
+]},
+vitamin_d:{type:'treatment',title:'Vitamin D Supplements',def:'Vitamin D helps keep bones, teeth and muscles healthy. In the UK, many people are deficient, particularly in winter. The NHS recommends most adults consider a daily 10 microgram (400 IU) supplement between October and March.',src:'Source: NHS.uk',kw:'vitamin D supplement deficiency bones sunshine winter immune',comments:[
+  {tag:'Vitamin D deficiency',stars:7,text:'Was found to be deficient in a routine blood test. Started high-dose vitamin D3 under GP supervision and within eight weeks the fatigue and bone aches I\'d had for months had improved noticeably. Blood levels normalised.',date:d(90)},
+  {tag:'General winter supplement',stars:6,text:'Take 1000 IU daily through autumn and winter as a precaution. Hard to say if it makes a specific difference but mood and energy do seem better in what are usually difficult months for me.',date:d(30)}
+]},
+iron_supplements:{type:'treatment',title:'Iron Supplements',def:'Iron supplements are used to treat or prevent iron deficiency anaemia. Ferrous sulfate is the most commonly prescribed form. They should be taken on an empty stomach if possible and with vitamin C to improve absorption.',src:'Source: NHS.uk',kw:'iron supplements ferrous sulphate anaemia deficiency fatigue',comments:[
+  {tag:'Iron deficiency anaemia',stars:7,text:'Iron levels came up over about eight weeks of taking ferrous sulfate daily. Fatigue and breathlessness improved noticeably. Had to be patient — it takes time. Taking with orange juice improved absorption.',date:d(70)},
+  {tag:'Heavy periods causing deficiency',stars:7,text:'My GP found low ferritin due to heavy periods. Iron supplements alongside addressing the cause brought levels back up and the fatigue resolved. Important to get retested after the course.',date:d(100)}
+]},
+multivitamins:{type:'treatment',title:'Multivitamins',def:'Multivitamins are supplements containing a combination of vitamins and minerals. They are not a substitute for a healthy diet but may be beneficial for people with dietary restrictions, certain medical conditions, or during pregnancy.',src:'Source: NHS.uk',kw:'multivitamin supplement nutrition vitamin mineral',comments:[
+  {tag:'Vegetarian diet',stars:6,text:'As a vegetarian I take a multivitamin alongside B12 separately. Hard to quantify specific effects but energy levels and blood markers including B12 and iron have stayed in the normal range since starting.',date:d(180)},
+  {tag:'Post-illness recovery',stars:5,text:'Took a multivitamin during recovery from a prolonged illness. Whether it made a significant difference or not I\'m unsure but I felt it was worth covering nutritional bases while appetite and diet were reduced.',date:d(60)}
+]},
+calcium_supplements:{type:'treatment',title:'Calcium Supplements',def:'Calcium supplements are taken by people who do not get enough calcium through their diet. They are commonly prescribed alongside vitamin D for osteoporosis prevention and treatment. Adequate calcium is important for bone health.',src:'Source: NHS.uk',kw:'calcium supplement bone health osteoporosis dairy deficiency',comments:[
+  {tag:'Osteoporosis',stars:7,text:'Prescribed calcium and vitamin D together after a DEXA scan showed reduced bone density. My follow-up scan two years later showed stabilisation. Important alongside weight-bearing exercise.',date:d(150)},
+  {tag:'Post-menopause bone health',stars:6,text:'Started calcium supplements at menopause on the advice of my GP. Combined with HRT and regular walking I\'m hoping to minimise the bone density loss that accelerates in the years after menopause.',date:d(80)}
+]},
+probiotics:{type:'treatment',title:'Probiotics',def:'Probiotics are live bacteria and yeasts that are beneficial to health, particularly the digestive system. They are available as supplements and in certain foods like yoghurt. They may help with IBS, antibiotic-related diarrhoea and gut health.',src:'Source: NHS.uk',kw:'probiotics gut bacteria IBS digestive health lactobacillus',comments:[
+  {tag:'Post-antibiotic gut recovery',stars:7,text:'Started taking a high-strength probiotic immediately after finishing a course of antibiotics. The digestive disruption I normally experience after antibiotics was notably less severe this time. Will do this every time now.',date:d(20)},
+  {tag:'IBS management',stars:6,text:'Added a daily probiotic alongside the low FODMAP diet for IBS. Hard to separate the effects but bloating did reduce more than the diet alone had managed previously. Worth trying alongside dietary changes.',date:d(60)}
+]},
+// Placeholder for direct-from-detail-page submissions
+};
+
+// ── NAVIGATION ───────────────────────────────────────────────────────────────
+function goTab(tab){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.nav-tab').forEach(function(t){t.classList.remove('on');});
+  document.getElementById('page-'+tab).classList.add('active');
+  document.getElementById('nt-'+tab).classList.add('on');
+  if(tab==='explore'){renderCards(document.getElementById('main-search').value);}
+}
+
+function goBack(){
+  goTab('explore');
+}
+
+// ── SEARCH ───────────────────────────────────────────────────────────────────
+function doSearch(val){
+  var q=val.toLowerCase().trim();
+  var cards=document.querySelectorAll('.card');
+  var any=false;
+  cards.forEach(function(c){
+    var kw=(c.dataset.kw+' '+c.querySelector('.card-title').textContent).toLowerCase();
+    var show=!q||kw.indexOf(q)>-1;
+    c.style.display=show?'':'none';
+    if(show)any=true;
+  });
+  document.getElementById('no-results').style.display=(q&&!any)?'block':'none';
+}
+
+// ── RENDER CARDS ─────────────────────────────────────────────────────────────
+function renderCards(q){
+  var html='';
+  Object.keys(data).forEach(function(id){
+    var d=data[id];
+    var preview=d.def?d.def.substring(0,100)+'...':'Community created page.';
+    html+='<div class="card'+(d.communityCreated?' new-card':'')+'" data-kw="'+(d.kw||'')+'" onclick="openDetail(\''+id+'\')">';
+    html+='<span class="badge '+d.bc+'">'+d.badge+'</span>';
+    html+='<div class="card-title">'+d.title+'</div>';
+    html+='<div class="card-def">'+preview+'</div>';
+    html+='<div class="card-footer"><span class="cmt-count" id="count-'+id+'">'+countLabel(id)+'</span><span class="tap-hint">Read more ›</span></div>';
+    html+='</div>';
+  });
+  document.getElementById('card-grid').innerHTML=html;
+  if(q)doSearch(q);
+}
+
+function countLabel(id){var n=data[id].comments.length;return n+' communit'+(n===1?'y experience':'y experiences');}
+
+// ── DETAIL ───────────────────────────────────────────────────────────────────
+function openDetail(id){
+  currentDetailId=id;
+  var d=data[id];
+  var infoHtml='<span class="badge '+d.bc+' detail-badge">'+d.badge+'</span>';
+  infoHtml+='<div class="detail-title">'+d.title+'</div>';
+  if(d.communityCreated&&!d.def){
+    infoHtml+='<div class="community-note">This page was created by the community. No official definition was found — please check NHS.uk for more information.</div>';
+  } else {
+    infoHtml+='<div class="detail-def">'+(d.def||'')+'</div>';
+    infoHtml+='<div class="detail-src">'+d.src+'</div>';
+  }
+  document.getElementById('detail-info').innerHTML=infoHtml;
+  renderComments(id);
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.getElementById('page-detail').classList.add('active');
+  document.querySelectorAll('.nav-tab').forEach(function(t){t.classList.remove('on');});
+  window.scrollTo(0,0);
+  // Pre-fill the detail panel fields if type matches
+  var dpI=document.getElementById('dp-illness');
+  var dpT=document.getElementById('dp-treatment');
+  if(d.type==='illness'){dpI.value=d.title;previewMatch('dp','illness',d.title);}
+  else{dpT.value=d.title;previewMatch('dp','treatment',d.title);}
+}
+
+function renderComments(id){
+  var d=data[id];
+  var html='';
+  if(!d.comments.length){html='<div class="no-comments">No experiences shared yet. Be the first!</div>';}
+  else{
+    d.comments.forEach(function(c){
+      html+='<div class="comment-box'+(c.isNew?' new-comment':'')+'"><div class="cm-header"><span class="cm-tag">'+(c.tag||'Anonymous')+'</span>'+(c.stars?'<span class="cm-stars">'+starStr(c.stars)+' '+c.stars+'/10</span>':'')+'</div><div class="cm-text">'+(c.text||'')+'</div><div class="cm-footer"><span class="cm-date">'+(c.date||'')+'</span><button class="report-btn" onclick="openReport()">Report</button></div></div>';
+    });
+  }
+  document.getElementById('detail-comments').innerHTML=html;
+}
+
+function starStr(n){var s='';for(var i=1;i<=10;i++)s+=i<=n?'&#9733;':'&#9734;';return s;}
+
+// ── MATCH PREVIEW ─────────────────────────────────────────────────────────────
+function findMatch(val){
+  var v=val.toLowerCase().trim();
+  if(!v)return null;
+  var best=null;
+  Object.keys(data).forEach(function(id){
+    var h=(data[id].title+' '+data[id].kw).toLowerCase();
+    if(h.indexOf(v)>-1)best=id;
+  });
+  return best;
+}
+
+function previewMatch(prefix,field,val){
+  var v=val.trim();
+  var pre=document.getElementById(prefix+'-match-'+field);
+  var lbl=document.getElementById(prefix+'-m'+field.charAt(0)+'l');
+  var ttl=document.getElementById(prefix+'-m'+field.charAt(0)+'t');
+  if(!v){pre.style.display='none';return;}
+  var mid=findMatch(v);
+  pre.style.display='block';
+  ttl.className='match-val';
+  if(mid){lbl.textContent='Will appear under:';ttl.textContent=data[mid].title;}
+  else{lbl.textContent='New page will be created for:';ttl.className='match-val new';ttl.textContent='"'+v+'"';}
+  pre.dataset.matched=mid||'';
+  pre.dataset.raw=v;
+}
+
+// ── STARS ────────────────────────────────────────────────────────────────────
+function setStar(prefix,n){
+  starRatings[prefix]=n;
+  document.querySelectorAll('#'+prefix+'-stars .star-btn').forEach(function(b,i){
+    b.classList.toggle('lit',i<n);
+  });
+}
+
+// ── SUBMIT ───────────────────────────────────────────────────────────────────
+function todayStr(){return new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});}
+
+function slugify(s){return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
+
+async function doSubmit(prefix){
+  var illness=document.getElementById(prefix+'-illness').value.trim();
+  var treatment=document.getElementById(prefix+'-treatment').value.trim();
+  var experience=document.getElementById(prefix+'-exp').value.trim();
+  var stars=starRatings[prefix]||0;
+
+  var iEl=document.getElementById(prefix+'-match-illness');
+  var tEl=document.getElementById(prefix+'-match-treatment');
+  var iId=iEl.dataset.matched||'';
+  var tId=tEl.dataset.matched||'';
+  var posted=[];
+  var today=todayStr();
+
+  // Add to illness page — tag = treatment used
+  if(illness){
+    if(!iId){iId=slugify(illness);if(!data[iId])createNewPage(illness,'illness');}
+    if(iId&&data[iId]){
+      data[iId].comments.push({tag:treatment||'Treatment not specified',stars:stars,text:experience||'No description provided.',date:today,isNew:true});
+      posted.push(data[iId].title);
+    }
+  }
+
+  // Add to treatment page — tag = illness being treated
+  if(treatment){
+    if(!tId){tId=slugify(treatment);if(!data[tId])createNewPage(treatment,'treatment');}
+    if(tId&&data[tId]&&tId!==iId){
+      data[tId].comments.push({tag:illness||'Condition not specified',stars:stars,text:experience||'No description provided.',date:today,isNew:true});
+      posted.push(data[tId].title);
+    }
+  }
+
+  // Refresh UI
+  renderCards();
+  if(currentDetailId&&posted.some(function(t){return data[Object.keys(data).find(function(k){return data[k].title===t})];})){
+    renderComments(currentDetailId);
+  }
+
+  var okEl=document.getElementById(prefix+'-ok');
+  document.getElementById(prefix+'-ok-msg').textContent=posted.length?' Added to: '+posted.join(' and ')+'.':' Experience saved.';
+  okEl.style.display='block';
+
+  // Reset
+  document.getElementById(prefix+'-illness').value='';
+  document.getElementById(prefix+'-treatment').value='';
+  document.getElementById(prefix+'-exp').value='';
+  iEl.style.display='none';tEl.style.display='none';
+  iEl.dataset.matched='';tEl.dataset.matched='';
+  setStar(prefix,0);
+  setTimeout(function(){okEl.style.display='none';},5000);
+}
+
+function createNewPage(title,type){
+  var id=slugify(title);
+  if(data[id])return id;
+  var isIll=type==='illness';
+  data[id]={
+    type:type,
+    badge:isIll?'Illness / Symptom':'Medication / Treatment',
+    bc:isIll?'bi':'bt',
+    title:title.charAt(0).toUpperCase()+title.slice(1),
+    def:null,
+    src:'Community created page',
+    kw:title.toLowerCase(),
+    communityCreated:true,
+    comments:[]
+  };
+  return id;
+}
+
+// ── REPORT MODAL ─────────────────────────────────────────────────────────────
+function openReport(){
+  var m=document.getElementById('modal');
+  m.classList.add('open');
+  document.getElementById('modal-inner').innerHTML='<h3>Why are you reporting this?</h3><label class="radio-opt"><input type="radio" name="rr" value="mis"/> Misinformation</label><label class="radio-opt"><input type="radio" name="rr" value="per"/> Too many personal details</label><label class="radio-opt"><input type="radio" name="rr" value="oth" onchange="document.getElementById(\'ota\').style.display=\'block\'"/> Other</label><textarea class="modal-ta" id="ota" rows="3" placeholder="Please describe the issue..." style="display:none"></textarea><div class="modal-btns"><button class="btn-cancel" onclick="closeReport()">Cancel</button><button class="btn-submit" onclick="submitReport()">Submit Report</button></div>';
+}
+function closeReport(){document.getElementById('modal').classList.remove('open');}
+function submitReport(){
+  var s=document.querySelector('input[name=rr]:checked');
+  if(!s)return;
+  document.getElementById('modal-inner').innerHTML='<div class="modal-thanks">Thank you. We will review this report and take appropriate action.</div>';
+  setTimeout(closeReport,2500);
+}
+document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeReport();});
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+renderCards();
+</script>
+</body>
+</html>
